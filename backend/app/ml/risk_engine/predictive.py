@@ -57,17 +57,31 @@ class PredictiveEngine:
         
         results = {}
         
-        def _predict_prob(name, df):
+        def _predict_prob(name, df, feature_names):
             if name not in cls.models:
-                return 0.0
+                return {"prob": 0.0, "drivers": []}
+            model = cls.models[name]
             X_scaled = cls.scalers[name].transform(df)
-            probs = cls.models[name].predict_proba(X_scaled)[0]
-            # Prob of class 1 (True)
-            return round(probs[1] * 100, 1) if len(probs) > 1 else 0.0
+            probs = model.predict_proba(X_scaled)[0]
+            prob = round(probs[1] * 100, 1) if len(probs) > 1 else 0.0
             
-        results['cost_overrun_prob'] = _predict_prob('cost_overrun_model', df_cost)
-        results['schedule_delay_prob'] = _predict_prob('schedule_delay_model', df_schedule)
-        results['milestone_failure_prob'] = _predict_prob('milestone_failure_model', df_milestone)
-        results['escalation_risk_prob'] = _predict_prob('escalation_risk_model', df_escalation)
+            drivers = []
+            if hasattr(model, 'feature_importances_'):
+                importances = model.feature_importances_
+                # Get indices of top 2 features
+                top_indices = importances.argsort()[-2:][::-1]
+                for idx in top_indices:
+                    # Format feature name: 'issue_pressure' -> 'Issue Pressure'
+                    feat_name = feature_names[idx].replace('_', ' ').title()
+                    weight = round(importances[idx] * 100)
+                    if weight > 5:  # Only include if it has meaningful weight
+                        drivers.append({"name": feat_name, "weight": weight})
+            
+            return {"prob": prob, "drivers": drivers}
+            
+        results['cost_overrun'] = _predict_prob('cost_overrun_model', df_cost, features_cost)
+        results['schedule_delay'] = _predict_prob('schedule_delay_model', df_schedule, features_schedule)
+        results['milestone_failure'] = _predict_prob('milestone_failure_model', df_milestone, features_milestone)
+        results['escalation_risk'] = _predict_prob('escalation_risk_model', df_escalation, features_escalation)
         
         return results

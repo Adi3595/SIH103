@@ -13,6 +13,7 @@ import MomentumPanel from '../components/risk/MomentumPanel'
 import HistoricalAnalogues from '../components/risk/HistoricalAnalogues'
 import AIAdvisor from '../components/risk/AIAdvisor'
 import PredictiveML from '../components/risk/PredictiveML'
+import ProjectChat from '../components/risk/ProjectChat'
 import { SkeletonCard } from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
 
@@ -167,6 +168,9 @@ export default function ProjectDetail() {
         </motion.div>
 
       </motion.div>
+
+      {/* RAG-powered AI Chat — floating panel */}
+      <ProjectChat projectId={id!} projectName={project.project_name} />
     </PageContainer>
   )
 }

@@ -191,11 +191,19 @@ def get_project_analogues(project_id: str, db: Session = Depends(get_db)):
 
 from app.ml.risk_engine.predictive import PredictiveEngine
 
+class FeatureDriver(BaseModel):
+    name: str
+    weight: int
+
+class PredictionDetail(BaseModel):
+    prob: float
+    drivers: List[FeatureDriver]
+
 class PredictionResponse(BaseModel):
-    cost_overrun_prob: float
-    schedule_delay_prob: float
-    milestone_failure_prob: float
-    escalation_risk_prob: float
+    cost_overrun: PredictionDetail
+    schedule_delay: PredictionDetail
+    milestone_failure: PredictionDetail
+    escalation_risk: PredictionDetail
 
 @router.get("/projects/{project_id}/predictions", response_model=PredictionResponse)
 def get_project_predictions(project_id: str, db: Session = Depends(get_db)):
@@ -221,3 +229,22 @@ def get_project_prescription(project_id: str, db: Session = Depends(get_db)):
     if "error" in res:
         raise HTTPException(status_code=404, detail=res["error"])
     return res
+
+class ChatRequest(BaseModel):
+    message: str
+
+class ChatResponse(BaseModel):
+    reply: str
+
+@router.post("/projects/{project_id}/chat", response_model=ChatResponse)
+def chat_with_project(project_id: str, request: ChatRequest, db: Session = Depends(get_db)):
+    """
+    RAG/Conversational AI: Answer queries based on the project's data.
+    """
+    # For now, we will reuse PrescriptiveEngine logic but pass the query
+    # In a full RAG implementation, this would query a vector store.
+    # Here we just pass the user's message to OpenRouter along with the project context.
+    res = PrescriptiveEngine.generate_prescription(db, project_id, query=request.message)
+    if "error" in res:
+        raise HTTPException(status_code=404, detail=res["error"])
+    return {"reply": res["prescription"]}
