@@ -10,58 +10,79 @@ import {
   Bar
 } from 'recharts'
 
-interface TimelineData {
-  month: string
-  planned_progress: number
-  actual_progress: number
-  expenditure: number
+export interface FingerprintHistoryData {
+  reporting_date: string
+  progress_health: number
+  financial_health: number
+  schedule_health: number
+  milestone_health: number
+  issue_pressure: number
   risk_score: number
+  risk_level: string
 }
 
 interface ProjectTimelineProps {
-  data: TimelineData[]
+  data: FingerprintHistoryData[]
 }
 
 export default function ProjectTimeline({ data }: ProjectTimelineProps) {
-  // Mock data for the timeline if not provided from API yet
-  const mockData = data?.length > 0 ? data : Array.from({ length: 12 }).map((_, i) => ({
-    month: `Month ${i+1}`,
-    planned_progress: Math.min(100, i * 8.3),
-    actual_progress: Math.min(100, i * 6.5), // Falling behind
-    expenditure: Math.min(100, i * 9.2), // Spending faster
-    risk_score: 20 + (i * 4) // Risk rising
-  }))
+  if (!data || data.length === 0) {
+    return (
+      <div className="bg-surface backdrop-blur-md rounded-xl border border-slate-700/50 p-6 shadow-sm h-full flex items-center justify-center">
+        <div className="text-slate-400 animate-pulse">Loading fingerprint trajectory...</div>
+      </div>
+    )
+  }
+
+  // Format dates for display
+  const chartData = data.map((d, i) => {
+    // D02 snapshots are typically monthly, let's just format the date to 'MMM YY'
+    const date = new Date(d.reporting_date)
+    const formattedDate = !isNaN(date.getTime()) 
+      ? date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
+      : `M${i+1}`
+      
+    return {
+      ...d,
+      displayDate: formattedDate
+    }
+  })
 
   return (
-    <div className="bg-surface rounded-xl border border-border p-6 shadow-sm h-full">
-      <h3 className="font-bold text-navy tracking-wide mb-6">PROJECT TRAJECTORY</h3>
+    <div className="bg-surface backdrop-blur-md rounded-xl border border-slate-700/50 p-6 shadow-sm h-full">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="font-bold text-slate-100 tracking-wide">FINGERPRINT EVOLUTION (24 MONTHS)</h3>
+      </div>
       
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
-            data={mockData}
-            margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+            data={chartData}
+            margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis 
-              dataKey="month" 
+              dataKey="displayDate" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+              tick={{ fontSize: 11, fill: 'var(--text-slate-400)' }}
               dy={10}
+              minTickGap={20}
             />
             <YAxis 
               yAxisId="left" 
+              domain={[0, 100]}
               axisLine={false} 
               tickLine={false}
-              tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+              tick={{ fontSize: 11, fill: 'var(--text-slate-400)' }}
             />
             <YAxis 
               yAxisId="right" 
               orientation="right" 
+              domain={[0, 100]}
               axisLine={false} 
               tickLine={false}
-              tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+              tick={{ fontSize: 11, fill: 'var(--text-slate-400)' }}
             />
             <Tooltip
               contentStyle={{ 
@@ -73,25 +94,22 @@ export default function ProjectTimeline({ data }: ProjectTimelineProps) {
               }}
               labelStyle={{ fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '8px' }}
             />
-            <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px' }} />
+            <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} />
             
-            <Line 
-              yAxisId="left"
-              type="monotone" 
-              dataKey="planned_progress" 
-              name="Planned Progress %"
-              stroke="#cbd5e1" 
-              strokeDasharray="5 5"
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 6 }}
+            <Bar 
+              yAxisId="right"
+              dataKey="risk_score" 
+              name="Composite Risk"
+              fill="#e2e8f0"
+              opacity={0.6}
+              radius={[4, 4, 0, 0]}
             />
             <Line 
               yAxisId="left"
               type="monotone" 
-              dataKey="actual_progress" 
-              name="Actual Progress %"
-              stroke="var(--color-primary)" 
+              dataKey="progress_health" 
+              name="Progress Health"
+              stroke="#2a9d8f" 
               strokeWidth={3}
               dot={false}
               activeDot={{ r: 6 }}
@@ -99,20 +117,34 @@ export default function ProjectTimeline({ data }: ProjectTimelineProps) {
             <Line 
               yAxisId="left"
               type="monotone" 
-              dataKey="expenditure" 
-              name="Expenditure %"
-              stroke="var(--color-secondary)" 
-              strokeWidth={2}
+              dataKey="financial_health" 
+              name="Financial Health"
+              stroke="#e9c46a" 
+              strokeWidth={3}
               dot={false}
               activeDot={{ r: 6 }}
             />
-            <Bar 
-              yAxisId="right"
-              dataKey="risk_score" 
-              name="Risk Score"
-              fill="var(--color-critical)"
-              opacity={0.2}
-              radius={[4, 4, 0, 0]}
+            <Line 
+              yAxisId="left"
+              type="monotone" 
+              dataKey="schedule_health" 
+              name="Schedule Health"
+              stroke="#f4a261" 
+              strokeWidth={2}
+              strokeDasharray="4 4"
+              dot={false}
+              activeDot={{ r: 4 }}
+            />
+            <Line 
+              yAxisId="left"
+              type="monotone" 
+              dataKey="milestone_health" 
+              name="Milestone Health"
+              stroke="#e76f51" 
+              strokeWidth={2}
+              strokeDasharray="4 4"
+              dot={false}
+              activeDot={{ r: 4 }}
             />
           </ComposedChart>
         </ResponsiveContainer>

@@ -1,104 +1,48 @@
-import { Activity, DollarSign, Calendar, Target, AlertTriangle, LucideIcon } from "lucide-react"
 import { motion } from "framer-motion"
-import { cn } from "../../utils/cn"
+import { Fingerprint } from "lucide-react"
 
-interface FingerprintData {
-  progress_health: number
-  financial_health: number
-  schedule_health: number
-  milestone_health: number
-  issue_pressure: number
-}
-
-interface DigitalFingerprintProps {
-  data: FingerprintData
-}
-
-export default function DigitalFingerprint({ data }: DigitalFingerprintProps) {
-  return (
-    <div className="bg-surface rounded-xl border border-border p-6 shadow-sm">
-      <h3 className="font-bold text-navy tracking-wide mb-6">DIGITAL FINGERPRINT</h3>
-      
-      <div className="space-y-6">
-        <HealthBar 
-          label="Progress Health" 
-          value={data.progress_health} 
-          icon={Activity} 
-          delay={0.1}
-        />
-        <HealthBar 
-          label="Financial Health" 
-          value={data.financial_health} 
-          icon={DollarSign} 
-          delay={0.2}
-        />
-        <HealthBar 
-          label="Schedule Health" 
-          value={data.schedule_health} 
-          icon={Calendar} 
-          delay={0.3}
-        />
-        <HealthBar 
-          label="Milestone Health" 
-          value={data.milestone_health} 
-          icon={Target} 
-          delay={0.4}
-        />
-        <HealthBar 
-          label="Issue Pressure" 
-          value={data.issue_pressure} 
-          icon={AlertTriangle} 
-          delay={0.5}
-          inverse
-        />
-      </div>
-      
-      <div className="mt-6 pt-4 border-t border-border flex justify-between text-xs text-muted font-medium">
-        <span>Higher health is better</span>
-        <span>Higher issue pressure is worse</span>
-      </div>
-    </div>
-  )
-}
-
-function HealthBar({ 
-  label, 
-  value, 
-  icon: Icon, 
-  inverse = false,
-  delay = 0 
-}: { 
-  label: string, 
-  value: number, 
-  icon: LucideIcon,
-  inverse?: boolean,
-  delay?: number
-}) {
-  // Determine color based on whether higher is better (inverse = false) or higher is worse (inverse = true)
-  let isGood = inverse ? value < 30 : value > 70
-  let isWarning = inverse ? (value >= 30 && value < 70) : (value >= 40 && value <= 70)
+export default function DigitalFingerprint({ fingerprint }: { fingerprint: any }) {
+  if (!fingerprint) return null
   
-  const colorClass = isGood ? "bg-teal text-teal" : isWarning ? "bg-yellow text-yellow-700" : "bg-coral text-coral"
-
+  const dims = [
+    { key: 'progress_health', label: 'Progress Health', val: fingerprint.progress_health },
+    { key: 'financial_health', label: 'Financial Health', val: fingerprint.financial_health },
+    { key: 'schedule_health', label: 'Schedule Health', val: fingerprint.schedule_health },
+    { key: 'milestone_health', label: 'Milestone Health', val: fingerprint.milestone_health },
+  ]
+  
   return (
-    <div>
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-2 text-sm font-semibold text-navy">
-          <Icon size={16} className="text-muted" />
-          {label}
+    <div className="glass-panel h-full flex flex-col p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-teal/10 border border-teal/20 flex items-center justify-center text-teal-700">
+          <Fingerprint size={20} />
         </div>
-        <div className={cn("text-sm font-black", colorClass.split(' ')[1])}>
-          {value} <span className="text-muted font-normal text-xs">/ 100</span>
+        <div>
+          <h3 className="text-sm font-bold text-slate-800 tracking-wide">DIGITAL FINGERPRINT</h3>
+          <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Real-time Dimension State</p>
         </div>
       </div>
       
-      <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-        <motion.div 
-          initial={{ width: 0 }}
-          animate={{ width: `${value}%` }}
-          transition={{ duration: 1, delay, ease: "easeOut" }}
-          className={cn("h-full rounded-full", colorClass.split(' ')[0])}
-        />
+      <div className="flex-1 flex flex-col justify-around gap-4">
+        {dims.map((dim, i) => {
+          let color = '#0f766e' // teal-700
+          let bg = '#ccfbf1' // teal-100
+          if (dim.val < 40) { color = '#be123c'; bg = '#ffe4e6' }
+          else if (dim.val < 70) { color = '#b45309'; bg = '#fef3c7' }
+          
+          return (
+            <div key={dim.key}>
+              <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest mb-1.5">
+                <span className="text-slate-600">{dim.label}</span>
+                <span style={{ color }}>{dim.val}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden shadow-inner">
+                <motion.div initial={{ width: 0 }} animate={{ width: dim.val + "%" }} transition={{ duration: 1, delay: i * 0.1 }}
+                  className="h-full rounded-full" style={{ backgroundColor: color }} />
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

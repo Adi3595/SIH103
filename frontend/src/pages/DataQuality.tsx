@@ -16,18 +16,18 @@ export default function DataQuality() {
   return (
     <PageContainer>
       <div className="mb-8">
-        <h1 className="text-xs font-bold text-muted uppercase tracking-widest mb-1">Data Integrity Monitor</h1>
-        <h2 className="text-3xl font-black text-navy tracking-tight flex items-center gap-3">
+        <h1 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Data Integrity Monitor</h1>
+        <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
           DATA QUALITY
-          <Database size={24} className="text-teal" />
+          <Database size={24} className="text-teal-600" />
         </h2>
       </div>
 
-      <div className="bg-yellow/10 border border-yellow/30 rounded-xl p-5 mb-8 flex items-start gap-3">
-        <AlertTriangle size={18} className="text-yellow-600 shrink-0 mt-0.5" />
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8 flex items-start gap-3 shadow-sm">
+        <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-bold text-navy mb-0.5">Synthetic Dataset Notice</p>
-          <p className="text-xs text-muted">This system currently operates on <strong>SYNTHETIC DATA — NOT OFFICIAL PAIMANA/MoSPI DATA</strong>. The data quality checks below reflect the integrity of the generated dataset used for prototype validation.</p>
+          <p className="text-sm font-bold text-slate-800 mb-0.5">Synthetic Dataset Notice</p>
+          <p className="text-xs text-slate-500">This system currently operates on <strong>SYNTHETIC DATA — NOT OFFICIAL PAIMANA/MoSPI DATA</strong>. The data quality checks below reflect the integrity of the generated dataset used for prototype validation.</p>
         </div>
       </div>
 
@@ -40,21 +40,21 @@ export default function DataQuality() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
-              className="bg-surface border border-border rounded-xl p-5 flex items-center gap-5 hover:shadow-soft transition-all"
+              className="glass-panel p-5 flex items-center gap-5 hover:shadow-md transition-all"
             >
               <div className="p-3 rounded-lg" style={{ backgroundColor: `${c.color}15` }}>
                 <Icon size={20} style={{ color: c.color }} />
               </div>
               <div className="flex-1">
-                <div className="text-sm font-bold text-navy mb-0.5">{c.label}</div>
+                <div className="text-sm font-bold text-slate-800 mb-0.5">{c.label}</div>
                 {c.note ? (
-                  <div className="text-xs text-muted">{c.note}</div>
+                  <div className="text-xs text-slate-500">{c.note}</div>
                 ) : (
-                  <div className="text-xs text-muted">{c.count?.toLocaleString()} records</div>
+                  <div className="text-xs text-slate-500">{c.count?.toLocaleString()} records</div>
                 )}
               </div>
-              <div className="text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded border"
-                style={{ color: c.color, backgroundColor: `${c.color}10`, borderColor: `${c.color}30` }}>
+              <div className="text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded border shadow-sm bg-white"
+                style={{ color: c.color, borderColor: `${c.color}30` }}>
                 {c.status}
               </div>
             </motion.div>
@@ -62,8 +62,8 @@ export default function DataQuality() {
         })}
       </div>
 
-      <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-        <h3 className="font-bold text-navy tracking-wide mb-4">DATASET SUMMARY</h3>
+      <div className="glass-panel p-6">
+        <h3 className="font-bold text-slate-800 tracking-wide mb-4 uppercase text-sm">Dataset Summary</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
             { label: 'Total Projects', value: '750' },
@@ -72,8 +72,8 @@ export default function DataQuality() {
             { label: 'Data Completeness', value: '98.7%' },
           ].map(item => (
             <div key={item.label} className="text-center">
-              <div className="text-3xl font-black text-navy mb-1">{item.value}</div>
-              <div className="text-xs text-muted font-semibold uppercase tracking-wider">{item.label}</div>
+              <div className="text-3xl font-black text-slate-800 mb-1">{item.value}</div>
+              <div className="text-xs text-slate-400 font-bold uppercase tracking-widest">{item.label}</div>
             </div>
           ))}
         </div>

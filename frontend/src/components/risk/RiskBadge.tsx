@@ -1,42 +1,17 @@
-import { cva } from "class-variance-authority"
-import { AlertCircle, AlertTriangle, Info, CheckCircle2 } from "lucide-react"
-import { cn } from "../../utils/cn"
-
-const badgeVariants = cva(
-  "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border uppercase tracking-widest whitespace-nowrap",
-  {
-    variants: {
-      variant: {
-        LOW: "bg-teal/10 text-teal-700 border-teal/20",
-        MEDIUM: "bg-yellow/10 text-yellow-700 border-yellow/30",
-        HIGH: "bg-orange/10 text-orange-700 border-orange/30",
-        CRITICAL: "bg-coral/10 text-coral-700 border-coral/30",
-      },
-    },
-    defaultVariants: {
-      variant: "LOW",
-    },
-  }
-)
-
-export interface RiskBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  level: string
-  variant?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" | null
+interface RiskBadgeProps { level: string; className?: string }
+const levelConfig: any = {
+  LOW:      { label: 'LOW',      color: '#0f766e', bg: '#ccfbf1', border: '#99f6e4' },
+  MEDIUM:   { label: 'MEDIUM',   color: '#b45309', bg: '#fef3c7', border: '#fde68a' },
+  HIGH:     { label: 'HIGH',     color: '#c2410c', bg: '#ffedd5', border: '#fed7aa' },
+  CRITICAL: { label: 'CRITICAL', color: '#be123c', bg: '#ffe4e6', border: '#fecdd3' },
 }
-
-export default function RiskBadge({ className, variant, level, ...props }: RiskBadgeProps) {
-  const activeVariant = variant || (level.toUpperCase() as any)
-  
-  const Icon = 
-    activeVariant === 'CRITICAL' ? AlertCircle :
-    activeVariant === 'HIGH' ? AlertTriangle :
-    activeVariant === 'MEDIUM' ? Info :
-    CheckCircle2
-
+export default function RiskBadge({ level, className }: RiskBadgeProps) {
+  const c = levelConfig[level] ?? levelConfig.MEDIUM
   return (
-    <div className={cn(badgeVariants({ variant: activeVariant, className }))} {...props}>
-      <Icon size={12} strokeWidth={2.5} />
-      {level}
-    </div>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${className ?? ''}`}
+      style={{ color: c.color, background: c.bg, border: `1px solid ${c.border}` }}>
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: c.color }} />
+      {c.label}
+    </span>
   )
 }

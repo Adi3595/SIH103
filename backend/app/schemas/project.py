@@ -43,3 +43,54 @@ class DashboardSummaryResponse(BaseModel):
     critical_risk: int
     rising_risk: int
     top_priorities: List[DigitalFingerprintResponse]
+
+# ── Layer 03: Risk Momentum ──────────────────────────────────────────────────
+
+class DimensionDelta(BaseModel):
+    current: float
+    past: Optional[float]
+    delta: float
+
+class MomentumClassification(BaseModel):
+    label: str        # ACCELERATING | RISING | STABLE | IMPROVING
+    severity: str     # critical | high | medium | low
+    color: str        # hex color for UI
+    description: str
+
+class MomentumConcern(BaseModel):
+    dimension: str
+    label: str
+    delta: float
+    current: float
+    severity: str
+
+class MomentumReportResponse(BaseModel):
+    project_id: str
+    reporting_date: Optional[str]
+    window_months: int
+    overall_momentum: float
+    overall_classification: MomentumClassification
+    dimension_momentum: dict           # keyed by dimension name
+    fastest_deteriorating_dimension: Optional[str]
+    issue_pressure_delta: float
+    concerns: List[MomentumConcern]
+    current_risk_score: float
+    past_risk_score: float
+    risk_level: str
+    project_state: str
+
+# ── Layer 02: Historical Analogues ───────────────────────────────────────────
+
+class AnalogueProject(BaseModel):
+    project_id: str
+    project_name: str
+    sector: str
+    similarity_score: float
+    risk_level: str
+    project_state: str
+    risk_score: float
+    original_cost_cr: Optional[float]
+
+class AnalogueResponse(BaseModel):
+    target_project_id: str
+    analogues: List[AnalogueProject]

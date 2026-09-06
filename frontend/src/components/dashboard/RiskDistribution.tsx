@@ -26,8 +26,8 @@ export default function RiskDistribution({ data, total }: RiskDistributionProps)
   ]
 
   return (
-    <div className="bg-surface rounded-xl border border-border p-5 shadow-sm h-full flex flex-col">
-      <h3 className="font-bold text-navy tracking-wide mb-4">PORTFOLIO RISK DISTRIBUTION</h3>
+    <div className="bg-surface backdrop-blur-md rounded-xl border border-slate-700/50 p-5 shadow-sm h-full flex flex-col">
+      <h3 className="font-bold text-slate-100 tracking-wide mb-4">PORTFOLIO RISK DISTRIBUTION</h3>
       
       <div className="flex-1 relative min-h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -67,8 +67,8 @@ export default function RiskDistribution({ data, total }: RiskDistributionProps)
         
         {/* Center Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-4xl font-black text-navy">{total}</span>
-          <span className="text-xs font-bold text-muted uppercase tracking-widest mt-1">Projects</span>
+          <span className="text-4xl font-black text-slate-100">{total}</span>
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Projects</span>
         </div>
       </div>
     </div>

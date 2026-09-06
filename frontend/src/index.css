@@ -1,41 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'Scoutie Sans';
-  src: url('/fonts/ScoutieSans-VariableFont_wght.ttf') format('truetype');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Scoutie Sans';
-  src: url('/fonts/ScoutieSans-Italic-VariableFont_wght.ttf') format('truetype');
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
-}
-
-:root {
-  --color-primary: #264653;
-  --color-secondary: #2a9d8f;
-  --color-warning: #e9c46a;
-  --color-elevated-risk: #f4a261;
-  --color-critical: #e76f51;
-  
-  --background: #f8fafc;
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --text-main: #264653;
-  --text-muted: #64748b;
-}
-
-
-
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   body {
-    @apply m-0 font-sans bg-slate-50 text-slate-900 antialiased selection:bg-[#264653] selection:text-white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #ccfbf1;
+    color: #0f766e;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+}
+
+@layer components {
+  /* Milky glass card — primary surface */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.03);
+    border-radius: 1rem;
+  }
+
+  /* Slightly more opaque panel */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 2px 12px -2px rgba(0, 0, 0, 0.04);
+    border-radius: 1rem;
+    position: relative;
+  }
+}
+
+@layer utilities {
+  /* Prose overrides for AI Advisor markdown */
+  .prose h1, .prose h2, .prose h3 {
+    color: #1e293b;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .prose p {
+    color: #475569;
+    line-height: 1.7;
+  }
+
+  .prose ul li {
+    color: #334155;
+  }
+
+  .prose strong {
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  .prose code {
+    background: #f1f5f9;
+    color: #0f766e;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.85em;
+  }
+
+  /* Smooth scroll */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+
+  /* Tabular nums for all numeric values */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
 }

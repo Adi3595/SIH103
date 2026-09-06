@@ -1,70 +1,22 @@
-import { LucideIcon } from "lucide-react"
 import { motion } from "framer-motion"
-import { cn } from "../../utils/cn"
+import { LucideIcon } from "lucide-react"
 
-interface KPIStatCardProps {
-  title: string
-  value: number | string
-  icon: LucideIcon
-  trend?: string
-  trendValue?: string
-  trendUp?: boolean
-  trendNeutral?: boolean
-  className?: string
-  valueClassName?: string
-}
-
-export default function KPIStatCard({
-  title,
-  value,
-  icon: Icon,
-  trend,
-  trendValue,
-  trendUp,
-  trendNeutral,
-  className,
-  valueClassName
-}: KPIStatCardProps) {
+export default function KPIStatCard({ title, value, subtitle, icon: Icon, color, delay }: any) {
   return (
-    <motion.div 
-      whileHover={{ y: -2 }}
-      className={cn(
-        "bg-surface rounded-xl border border-border p-5 shadow-sm hover:shadow-soft transition-all group",
-        className
-      )}
+    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay }}
+      className="glass-card p-6 relative overflow-hidden group hover:shadow-lg transition-all duration-300"
     >
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">{title}</h3>
-        <div className="p-2 bg-slate-50 rounded-lg text-slate-400 group-hover:text-navy transition-colors">
-          <Icon size={18} />
+      <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-10 group-hover:scale-150 transition-transform duration-700 pointer-events-none" style={{ backgroundColor: color }} />
+      <div className="flex justify-between items-start mb-4">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white shadow-sm border border-slate-100" style={{ color }}>
+          <Icon size={20} />
         </div>
       </div>
-      
-      <div className="flex items-baseline gap-2 mb-3">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4 }}
-          className={cn("text-4xl font-black text-navy tracking-tight", valueClassName)}
-        >
-          {value}
-        </motion.div>
+      <div>
+        <h3 className="text-slate-500 font-bold text-xs uppercase tracking-widest mb-1">{title}</h3>
+        <div className="text-3xl font-black text-slate-800 tabular-nums">{value}</div>
+        <p className="text-slate-400 text-xs font-medium mt-2">{subtitle}</p>
       </div>
-
-      {(trend || trendValue) && (
-        <div className="flex items-center gap-2 text-xs font-medium">
-          {trendValue && (
-            <span className={cn(
-              "px-1.5 py-0.5 rounded",
-              trendNeutral ? "bg-slate-100 text-slate-600" :
-              trendUp ? "bg-coral/10 text-coral" : "bg-teal/10 text-teal"
-            )}>
-              {trendUp && !trendNeutral && "↑ "}{!trendUp && !trendNeutral && "↓ "}{trendValue}
-            </span>
-          )}
-          {trend && <span className="text-muted">{trend}</span>}
-        </div>
-      )}
     </motion.div>
   )
 }

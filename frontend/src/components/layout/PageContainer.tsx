@@ -1,16 +1,17 @@
-import { ReactNode } from "react"
-import { motion } from "framer-motion"
+import React from 'react'
+import Header from './Header'
 
-export default function PageContainer({ children }: { children: ReactNode }) {
+export default function PageContainer({ children }: { children: React.ReactNode }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="p-8 max-w-[1920px] mx-auto w-full"
-    >
-      {children}
-    </motion.div>
+    <div className="flex-1 flex flex-col min-w-0 bg-slate-50 relative">
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-teal/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-coral/5 rounded-full blur-[100px] pointer-events-none" />
+      <Header />
+      <main className="flex-1 overflow-y-auto p-8 relative z-10">
+        <div className="max-w-[1600px] mx-auto w-full">
+          {children}
+        </div>
+      </main>
+    </div>
   )
 }

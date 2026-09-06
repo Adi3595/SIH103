@@ -9,7 +9,7 @@ import Analytics from './pages/Analytics'
 import Intelligence from './pages/Intelligence'
 import DataQuality from './pages/DataQuality'
 import Settings from './pages/Settings'
-import Header from './components/layout/Header'
+import MapView from './pages/MapView'
 import Sidebar from './components/layout/Sidebar'
 
 function AnimatedRoutes() {
@@ -24,6 +24,7 @@ function AnimatedRoutes() {
         <Route path="/rising" element={<RisingRisk />} />
         <Route path="/priorities" element={<Priorities />} />
         <Route path="/analytics" element={<Analytics />} />
+        <Route path="/map" element={<MapView />} />
         <Route path="/intelligence" element={<Intelligence />} />
         <Route path="/data" element={<DataQuality />} />
         <Route path="/settings" element={<Settings />} />
@@ -34,13 +35,10 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <div className="h-screen w-full bg-background flex flex-col overflow-hidden text-text">
-      <Header />
-      <div className="flex-1 flex overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-auto bg-slate-50/50 relative">
-          <AnimatedRoutes />
-        </main>
+    <div className="h-screen w-full flex overflow-hidden bg-slate-50">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0">
+        <AnimatedRoutes />
       </div>
     </div>
   )
