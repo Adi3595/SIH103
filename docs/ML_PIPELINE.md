@@ -18,7 +18,7 @@ The pipeline calculates 19 derivative features that capture the **momentum** of 
 2. **Progress Acceleration:** $\Delta$ Velocity / $\Delta$ Time.
 3. **Financial-Physical Divergence:** $(Expenditure \%) - (Physical Progress \%)$. A high positive divergence indicates funds are bleeding without physical results.
 4. **Delay Momentum:** Month-over-Month change in projected schedule variance.
-5. **Issue Pressure Index:** An aggregated severity score of unresolved roadblocks (Land Acquisition, Env Clearance, etc.).
+5. **Issue Pressure Index:** An aggregated severity score of unresolved roadblocks.
 
 All features are normalized using `scikit-learn`'s `StandardScaler` to ensure mean=0 and variance=1 before inference.
 
@@ -60,7 +60,6 @@ Layer 02 provides context by finding historically similar projects using the **K
 ### Implementation Details
 - **Algorithm:** Euclidean Distance KNN in a 5-dimensional sub-space (`progress_health`, `financial_health`, `schedule_health`, `milestone_health`, `risk_score`).
 - **Data Source:** Only searches against completed projects (`project_state = "COMPLETED"`).
-- **Execution:** Vectorizes the target project's fingerprint and runs a brute-force distance calculation (or KDTree for larger sets) against the historical DB.
 - **Output:** Returns the top $K=3$ analogues, allowing us to display how similar projects ultimately performed (e.g., "75% of similar projects suffered cost overruns").
 
 ---
@@ -78,45 +77,42 @@ Risk is dynamic. A project sitting at a score of 6.0 is stable if it was 6.0 las
   - `1 < overall_momentum <= 3`: **RISING** (Gradual decay)
   - `-1 <= overall_momentum <= 1`: **STABLE**
   - `overall_momentum < -1`: **IMPROVING** (Recovery)
-- **Root Cause Isolation:** Identifies which of the 4 health dimensions degraded the fastest over the window to flag the specific active concern.
 
 ---
 
-## 🔮 Layer 04A: Predictive Classifiers (Random Forest)
+## 🔮 Layer 04A: Predictive Classifiers (XGBoost, LightGBM, Random Forest)
 **File:** `app/ml/risk_engine/predictive.py`
 
-This layer forecasts future states using four distinct `RandomForestClassifier` models (scikit-learn), trained on the 18,000-row synthetic dataset.
+This layer forecasts future states. To ensure maximum accuracy, we use a heterogeneous ensemble of tree-based algorithms, selecting the best model architecture for each specific failure mode based on offline evaluation.
 
-### 1. Cost Overrun Model (`cost_overrun_model.pkl`)
+### 1. Cost Overrun Model: XGBoost
+- **Why XGBoost:** Cost overrun data often contains extreme outliers (e.g., land acquisition costs ballooning 300%). XGBoost's gradient boosting framework and L1/L2 regularization (`reg_alpha`, `reg_lambda`) handle these skewed residuals better than standard bagging.
 - **Target:** Will `cost_progress_divergence` exceed 10%?
-- **Architecture:** `RandomForestClassifier(max_depth=10, n_estimators=100, class_weight='balanced', random_state=42)`
 - **Key Features:** `financial_physical_divergence`, `monthly_expenditure_rate`.
-- **Threshold Tuning:** Default probability threshold adjusted to $0.35$ to prioritize high Recall (minimizing false negatives on critical budget blowouts).
 
-### 2. Schedule Delay Model (`schedule_delay_model.pkl`)
+### 2. Schedule Delay Model: LightGBM
+- **Why LightGBM:** Schedule data relies heavily on discrete milestones and large categorical sectors. LightGBM handles these efficiently through its histogram-based splitting and exclusive feature bundling (EFB), providing faster training and high precision on sparse delay data.
 - **Target:** Will `time_overrun_pct` exceed 15%?
-- **Architecture:** Same parameters, balanced class weights.
 - **Key Features:** `progress_velocity`, `days_remaining`.
-- **Threshold Tuning:** $0.30$
 
-### 3. Milestone Failure Model (`milestone_failure_model.pkl`)
+### 3. Milestone Failure Model: Random Forest
+- **Why Random Forest:** Milestone failure prediction requires high stability and robustness against noise (e.g., a milestone missed by 1 day vs 100 days). RF's bagging (bootstrap aggregating) prevents overfitting on noisy milestone reporting data.
 - **Target:** Will `milestone_completion_ratio` drop below 0.5 with active delays?
 - **Key Features:** `delay_momentum`, `milestone_delay_rate`.
-- **Threshold Tuning:** $0.25$
 
-### 4. Escalation Risk Model (`escalation_risk_model.pkl`)
+### 4. Escalation Risk Model: XGBoost
+- **Why XGBoost:** Predicting momentum escalation is highly non-linear. XGBoost's deep boosting rounds can capture complex interactions between `issue_pressure` and temporal `progress_acceleration`.
 - **Target:** Will `risk_momentum` exceed 5 in the next quarter?
 - **Key Features:** `issue_pressure` (highest importance), `risk_score`.
-- **Threshold Tuning:** $0.30$
 
-> **Tech Stack:** Models were trained offline via `train_models.py`, pickled (`.pkl` + `joblib` scalers), and are loaded dynamically by the FastAPI `PredictiveEngine` singleton at startup to ensure sub-10ms inference times.
+> **Tech Stack:** Models are trained offline via `train_models.py`, saved as optimized binaries, and loaded dynamically by the FastAPI `PredictiveEngine` singleton.
 
 ---
 
 ## 🧠 Layer 04C: Prescriptive AI (LLM / OpenRouter)
 **File:** `app/ml/risk_engine/prescriptive.py`
 
-Prediction without action is useless. Layer 04C translates the numerical risk data into actionable, plain-English policy recommendations.
+Layer 04C translates the numerical risk data into actionable, plain-English policy recommendations.
 
 ### Implementation Details
 - **Provider:** OpenRouter API (allows seamless switching between Mistral, Llama, and Claude).
@@ -125,8 +121,4 @@ Prediction without action is useless. Layer 04C translates the numerical risk da
   - The Layer 01 Digital Fingerprint (Health scores).
   - The Layer 03 Momentum data.
   - The Layer 04A Predictive probabilities.
-- **System Prompt:** Instructs the LLM to act as an "infrastructure advisory AI", enforcing a strict markdown response format containing:
-  1. Root Cause Analysis
-  2. 3-5 Immediate Action Items
-  3. Escalation Recommendation
-- **Fallback:** Uses basic hardcoded heuristic prescriptions if the API fails or rate-limits, ensuring the dashboard never breaks.
+- **System Prompt:** Instructs the LLM to act as an "infrastructure advisory AI", enforcing a strict markdown response format containing Root Cause Analysis, 3-5 Immediate Action Items, and Escalation Recommendation.
