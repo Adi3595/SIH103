@@ -1,0 +1,12 @@
+dataset_id,table,grain,rows
+D01,projects,1 row/project,750
+D02,project_snapshots,1 row/project/month,18000
+D03,milestones,1 row/milestone,6764
+D04,issues,1 row/issue/reporting event,7377
+D05,project_outcomes,1 row/outcome event,708
+D06,project_identity_map,1 row/identifier mapping,750
+D07,historical_failure_cases,1 row/evidenced case,135
+D08,risk_predictions,timestamped predictions,0
+D09,source_documents,1 row/source,750
+D10,data_quality_events,1 row/quality event,283
+D11,sector_performance_indicators,1 row/indicator/period,0

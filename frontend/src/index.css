@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Scoutie Sans';
+  src: url('/fonts/ScoutieSans-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Scoutie Sans';
+  src: url('/fonts/ScoutieSans-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --color-primary: #264653;
+  --color-secondary: #2a9d8f;
+  --color-warning: #e9c46a;
+  --color-elevated-risk: #f4a261;
+  --color-critical: #e76f51;
+  
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text-main: #264653;
+  --text-muted: #64748b;
+}
+
+
+
+@layer base {
+  body {
+    @apply m-0 font-sans bg-slate-50 text-slate-900 antialiased selection:bg-[#264653] selection:text-white;
+  }
+}
