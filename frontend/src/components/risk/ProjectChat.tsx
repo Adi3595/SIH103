@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, Send, X, Bot, User, Loader2, Sparkles } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -123,10 +122,9 @@ export default function ProjectChat({ projectId, projectName }: { projectId: str
                         ? 'bg-slate-50 border border-slate-200/80 text-slate-700 rounded-tl-sm'
                         : 'bg-teal-600 text-white rounded-tr-sm shadow-md shadow-teal-200'
                     }`}>
-                      {m.role === 'assistant'
-                        ? <ReactMarkdown className="prose prose-sm prose-slate max-w-none [&>p]:mb-2 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4 [&_strong]:font-bold [&_strong]:text-slate-800">{m.content}</ReactMarkdown>
-                        : <p>{m.content}</p>
-                      }
+                      <div className="whitespace-pre-wrap font-sans">
+                        {m.content.replace(/\*\*(.*?)\*\*/g, '$1')}
+                      </div>
                     </div>
                   </motion.div>
                 ))}
