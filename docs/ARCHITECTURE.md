@@ -1,266 +1,89 @@
-# SIH26103 — Canonical System Architecture Reference
+# PAIMANA: System Architecture & Technology Stack
 
-> This document describes the **full connected intelligence system** as approved by the team.
-> This is the blueprint every component must conform to.
-> **Do not deviate from this structure without discussion.**
+This document details the complete end-to-end architecture, technology choices, and data flow of the PAIMANA platform.
 
 ---
 
-## Core Design Principle
+## 1. High-Level System Architecture
 
-This is **NOT a linear pipeline**. It is a **continuously connected intelligence network** where outputs from one module feed multiple others, and human feedback loops back into the system.
-
-```
-CONTINUOUS MONITORING → LEARN FROM HISTORY → PREDICT RISK → EXPLAIN → PRESCRIBE → PRIORITIZE → REASSESS
-```
-
----
-
-## Central Hub
+PAIMANA follows a modern decoupled client-server architecture, utilizing a REST API to interface between the React frontend and the FastAPI + Python ML backend.
 
 ```
-┌─────────────────────────────────────────────────┐
-│          PROJECT INTELLIGENCE & RISK ENGINE      │  ← LARGEST / MOST PROMINENT
-│                                                  │
-│   • Dynamic Project Digital Fingerprint          │
-│   • Risk Score + Risk Momentum                   │
-│   • Project State Representation                 │
-└─────────────────────────────────────────────────┘
-```
-
-Everything connects **to and from** this central hub.
-
----
-
-## Module Definitions
-
-### MODULE 1 — PAIMANA / OCMS DATA (Input)
-```
-Contents:
-  • Current project data
-  • Historical project records
-  • Monthly updates
-  • Cost, expenditure, physical progress, milestones
-
-Connects TO:
-  → Data & Feature Engineering
-  → Historical Similarity Engine
+┌──────────────────────┐        JSON via REST        ┌─────────────────────────┐
+│     CLIENT TIER      │ ◀─────────────────────────▶ │      SERVER TIER        │
+│                      │                             │                         │
+│  React 18 + Vite     │                             │  FastAPI (Python 3.11)  │
+│  Framer Motion       │                             │  Uvicorn ASGI Server    │
+│  Tailwind CSS        │                             │  SQLAlchemy ORM         │
+│  React Simple Maps   │                             │  Scikit-Learn (ML)      │
+└──────────────────────┘                             └─────────────────────────┘
+                                                                  │
+                                                                  ▼
+                                                     ┌─────────────────────────┐
+                                                     │      DATA LAYER         │
+                                                     │                         │
+                                                     │  SQLite (Relational)    │
+                                                     │  Pickled ML Models      │
+                                                     │  TopoJSON Geodata       │
+                                                     └─────────────────────────┘
 ```
 
 ---
 
-### MODULE 2 — DATA & FEATURE ENGINEERING
-```
-Contents:
-  • Data validation & cleaning
-  • Temporal features
-  • Cost / progress / schedule indicators
-  • Derived project health metrics
+## 2. Frontend Technology Stack
 
-Connects TO:
-  → Project Intelligence & Risk Engine
-  → Predictive Analytics
-  → Anomaly Detection
-```
+The client application is built to be a high-performance, real-time "Command Center" prioritizing speed and aesthetics (Milky Matte theme).
+
+- **Core Framework:** React 18 + TypeScript. Built using Vite for HMR and optimized production bundling.
+- **Styling Engine:** Tailwind CSS v3. Custom theme configuration `tailwind.config.js` with bespoke colors (`teal-600`, `coral-50`, `glass-panel` utilities).
+- **Routing:** `react-router-dom` v6 for client-side routing (Dashboard, Projects, Map, Settings).
+- **State Management:** React Hooks (`useState`, `useEffect`, `useMemo`). Given the API-heavy nature, state is primarily localized to components handling their own Axios data fetching.
+- **Animations:** `framer-motion` for spring physics, layout transitions, and micro-interactions on hover/load.
+- **Geospatial Mapping:** `react-simple-maps` (d3-geo under the hood) parsing TopoJSON files for high-performance SVG choropleth mapping.
+- **Icons & UI:** `lucide-react` for consistent SVG iconography.
 
 ---
 
-### MODULE 3 — PREDICTIVE ANALYTICS
-```
-Contents:
-  • Cost overrun prediction
-  • Time overrun prediction
-  • Completion forecasting
-  • Project risk probability
-  • Early-warning probability
+## 3. Backend Technology Stack
 
-Connects TO:
-  → Project Intelligence & Risk Engine
-  → Explainable AI
-  → Prescriptive Analytics
-```
+The server is responsible for routing, database interaction, and serving as the host for the 4-layer ML Risk Engine.
+
+- **Core Framework:** FastAPI. Chosen for its extreme performance (based on Starlette) and native Pydantic validation (auto-generating OpenAPI docs).
+- **ASGI Server:** Uvicorn running on Python 3.11 for async request handling.
+- **ORM & Database:** SQLAlchemy (Core + ORM) mapping to a local SQLite database (`sih26103.db`). SQLite was chosen for portability in the hackathon prototype, but SQLAlchemy allows zero-code migration to PostgreSQL.
+- **Machine Learning:** `scikit-learn` for Random Forest Classifiers and K-Nearest Neighbors. Models are serialized via `joblib`/`pickle`.
+- **Data Processing:** `pandas` and `numpy` used extensively in the feature engineering pipeline (`pipeline.py`) to calculate rolling windows, deltas, and variances.
+- **Generative AI:** `requests` module interfacing with OpenRouter (Mistral-7B / Claude) for the Layer 04C Prescriptive engine.
 
 ---
 
-### MODULE 4 — ANOMALY DETECTION
-```
-Contents:
-  • Expenditure anomalies
-  • Progress anomalies
-  • Milestone deviations
-  • Financial–physical divergence
+## 4. Database Schema & Data Flow
 
-Connects TO:
-  → Project Intelligence & Risk Engine
-  → Explainable AI
-  → Prescriptive Analytics
-```
+The database contains three primary tables mimicking a highly normalized governmental infrastructure tracking system.
 
----
+1. **`projects` Table:**
+   - **Fields:** `internal_project_id` (PK), `project_name`, `ministry`, `sector`, `state`, `original_cost_cr`, `revised_cost_cr`, `original_end_date`, `revised_end_date`.
+   - **Purpose:** Static registry of all assets.
 
-### MODULE 5 — HISTORICAL SIMILARITY ENGINE
-```
-Contents:
-  • Similar project retrieval (KNN)
-  • Historical outcome comparison
-  • Common failure factors
-  • Analogue project evidence
+2. **`project_snapshots` Table:**
+   - **Fields:** `snapshot_id` (PK), `internal_project_id` (FK), `reporting_month`, `physical_progress_pct`, `financial_expenditure_cr`, `milestones_completed`, `active_issues_count`.
+   - **Purpose:** The raw time-series data reported by on-ground contractors every month.
 
-Connects TO:
-  ↔ Project Intelligence & Risk Engine  [bidirectional]
-  → Prescriptive Analytics
-  → LLM + RAG Assistant
-```
+3. **`project_features` Table:**
+   - **Fields:** 19 engineered float columns (e.g., `progress_velocity`, `delay_momentum`, `issue_pressure`).
+   - **Purpose:** The ML-ready vectors. Generated offline by iterating through `project_snapshots` and calculating temporal derivatives. This prevents the FastAPI server from doing heavy pandas dataframe calculations on the fly.
 
----
-
-### MODULE 6 — EXPLAINABLE AI
-```
-Contents:
-  • SHAP risk drivers
-  • Why is the project risky?
-  • Key contributing factors
-  • Evidence behind prediction
-
-Receives FROM:
-  ← Predictive Analytics
-  ← Anomaly Detection
-  ← Project Intelligence & Risk Engine
-
-Connects TO:
-  → Prescriptive Analytics
-  → Dashboard / Alerts
-```
-
----
-
-### MODULE 7 — PRESCRIPTIVE ANALYTICS
-```
-Contents:
-  • Intervention priorities
-  • Evidence-based recommendations
-  • What-if / scenario analysis
-  • Recovery areas requiring review
-
-Receives FROM:
-  ← Predictive Analytics
-  ← Anomaly Detection
-  ← Explainable AI
-  ← Historical Similarity Engine
-
-Connects TO:
-  → Dashboard / Early Warning Alerts
-  → Human Decision Maker
-
-FEEDBACK LOOP:
-  ↺ Back to Project Intelligence & Risk Engine
-    (continuous monitoring / updated risk assessment)
-```
-
----
-
-### MODULE 8 — LLM + RAG PROJECT ASSISTANT
-```
-Contents:
-  • Natural-language project queries
-  • Historical evidence retrieval
-  • Project summaries
-  • Explain predictions and recommendations
-
-Receives FROM:
-  ← Project Intelligence & Risk Engine
-  ← Historical Similarity Engine
-  ← Explainable AI
-
-Connects TO:
-  → Monitoring Authority
-```
-
----
-
-### MODULE 9 — DECISION SUPPORT (Output Layer)
-```
-Components:
-  • AI Monitoring Dashboard
-  • Early Warning Alerts
-  • Portfolio Prioritization
-  • Human Decision Maker
-
-FEEDBACK LOOP:
-  ↺ Human Decision Maker → Project Intelligence & Risk Engine
-    Label: "Officer feedback / updated project information"
-```
-
----
-
-## Complete Connection Map
-
-```
-PAIMANA/OCMS DATA
-  → Data & Feature Engineering
-  → Historical Similarity Engine
-
-Data & Feature Engineering
-  → Predictive Analytics
-  → Anomaly Detection
-  → Project Intelligence & Risk Engine
-
-Predictive Analytics
-  → Project Intelligence & Risk Engine
-  → Explainable AI
-  → Prescriptive Analytics
-
-Anomaly Detection
-  → Project Intelligence & Risk Engine
-  → Explainable AI
-  → Prescriptive Analytics
-
-Historical Similarity Engine
-  ↔ Project Intelligence & Risk Engine   [bidirectional]
-  → Prescriptive Analytics
-  → LLM + RAG
-
-Project Intelligence & Risk Engine
-  → Explainable AI
-  → LLM + RAG
-  → Prescriptive Analytics
-
-Explainable AI
-  → Prescriptive Analytics
-  → Dashboard / Alerts
-
-Prescriptive Analytics
-  → Dashboard / Alerts
-  → Human Decision Maker
-  ↺ Project Intelligence & Risk Engine   [feedback loop]
-
-Human Decision Maker
-  ↺ Project Intelligence & Risk Engine   [feedback loop]
-     "Officer feedback / updated project information"
-```
-
----
-
-## Three Highlighted Concepts (Innovation Claims)
-
-1. **Digital Fingerprint** — Multi-dimensional evolving health profile (not a single score)
-2. **Predictive Analytics** — Forward-looking ML (not threshold-based alerting)
-3. **Prescriptive Analytics** — Evidence-backed LLM recommendations (not generic advice)
-
----
-
-## What This Architecture Means for Our Build
-
-| Module | Maps To Code |
-|---|---|
-| PAIMANA Data | `SIH26103_synthetic_data/` CSV files + future ingestion pipeline |
-| Data & Feature Engineering | `app/ml/features/pipeline.py` |
-| Project Intelligence & Risk Engine | `app/ml/risk_engine/engine.py` (central hub) |
-| Predictive Analytics | `app/ml/predictor/` (to build) |
-| Anomaly Detection | `app/ml/anomaly/` (to build — sub-layer of feature engineering) |
-| Historical Similarity Engine | `app/ml/analogues/` (to build) |
-| Explainable AI | SHAP integration in `app/ml/predictor/` (to build) |
-| Prescriptive Analytics | `app/ml/llm/gemini_client.py` (to build) |
-| LLM + RAG | `app/ml/rag/` (to build) |
-| Dashboard / Alerts | `frontend/src/pages/Dashboard.tsx`, `RisingRisk.tsx` |
-| Human Decision Maker | `frontend/src/pages/Intelligence.tsx` (chat interface) |
+### End-to-End Request Flow Example (Project Detail Page)
+1. **Frontend:** User clicks a project in the Priority Table. React Router navigates to `/projects/PAI-00001`.
+2. **Frontend:** Component mounts, fires concurrent `axios.get` requests for:
+   - `/api/projects/PAI-00001` (Basic Data)
+   - `/api/projects/PAI-00001/fingerprint` (Layer 1)
+   - `/api/projects/PAI-00001/momentum` (Layer 3)
+   - `/api/projects/PAI-00001/predictions` (Layer 4A)
+3. **Backend:** FastAPI receives the requests.
+4. **Backend DB:** SQLAlchemy queries the `project_features` table for the latest row for `PAI-00001`.
+5. **Backend ML:** The row is passed to the Singletons:
+   - `RiskEngine.generate_fingerprint()`
+   - `PredictiveEngine.predict()` (Loads `.pkl` into memory, calls `.predict_proba()`)
+6. **Backend Response:** Pydantic serializes the Python dictionaries into JSON.
+7. **Frontend:** React updates state, triggering Framer Motion to animate the charts and display the data.
