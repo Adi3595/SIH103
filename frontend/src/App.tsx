@@ -37,7 +37,7 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <div className="h-screen w-full flex overflow-hidden bg-slate-50">
+    <div className="h-screen w-full flex overflow-hidden bg-surface-page">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <AnimatedRoutes />

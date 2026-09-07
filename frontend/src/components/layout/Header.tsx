@@ -38,11 +38,6 @@ export default function Header() {
       </div>
       
       <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-xs font-bold shadow-sm">
-          <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse" />
-          System Online
-        </div>
-        
         <button 
           onClick={toggleTheme}
           className="text-text-muted hover:text-text-primary transition-colors"
