@@ -27,13 +27,15 @@ export default function Sidebar() {
       className="h-full shrink-0 flex flex-col relative z-20 glass-card mx-3 my-3 border border-white/60"
     >
       {/* Logo area */}
-      <div className="relative px-3 py-3 flex items-center border-b border-slate-100 overflow-hidden">
+      <div className="relative px-3 flex items-center overflow-hidden transition-all duration-300" 
+           style={{ backgroundColor: '#043b25', borderBottom: '1px solid rgba(255,255,255,0.1)', minHeight: '64px' }}>
+        
         {/* Icon (always visible) */}
-        <div className="shrink-0 flex items-center justify-center rounded-xl w-11 h-11 overflow-hidden border border-[#0a7a4c]/30 shadow-[0_0_20px_rgba(10,122,76,0.4)]" style={{ backgroundColor: '#043b25' }}>
+        <div className="shrink-0 flex items-center justify-center w-10 h-10 overflow-hidden">
           <img
             src="/logo_icon.png"
-            alt="Nirikshan"
-            className="w-9 h-9 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+            alt="Nirikshan Icon"
+            className="w-10 h-10 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
           />
         </div>
 
@@ -45,12 +47,12 @@ export default function Sidebar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -8 }}
               transition={{ duration: 0.18 }}
-              className="ml-3 flex flex-col justify-center overflow-hidden h-10"
+              className="ml-2 flex flex-col justify-center overflow-hidden"
             >
               <img 
                 src="/logo_text.png" 
                 alt="Nirikshan: Monitor . Predict . Build Better" 
-                className="h-8 object-contain object-left" 
+                className="h-9 object-contain object-left drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" 
               />
             </motion.div>
           )}
