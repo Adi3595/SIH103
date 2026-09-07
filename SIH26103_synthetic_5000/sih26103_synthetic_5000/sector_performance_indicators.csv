@@ -1,0 +1,73 @@
+sector,subsector,period,indicator_name,indicator_value,source_scope
+Roads,ALL,2024,median_progress,73.957,SYNTHETIC
+Roads,ALL,2024,median_delay_days,115.858,SYNTHETIC
+Roads,ALL,2024,avg_expenditure_ratio,0.634,SYNTHETIC
+Roads,ALL,2025,median_progress,52.809,SYNTHETIC
+Roads,ALL,2025,median_delay_days,45.535,SYNTHETIC
+Roads,ALL,2025,avg_expenditure_ratio,0.593,SYNTHETIC
+Roads,ALL,2026,median_progress,75.434,SYNTHETIC
+Roads,ALL,2026,median_delay_days,112.805,SYNTHETIC
+Roads,ALL,2026,avg_expenditure_ratio,0.473,SYNTHETIC
+Railways,ALL,2024,median_progress,77.781,SYNTHETIC
+Railways,ALL,2024,median_delay_days,10.663,SYNTHETIC
+Railways,ALL,2024,avg_expenditure_ratio,0.701,SYNTHETIC
+Railways,ALL,2025,median_progress,73.545,SYNTHETIC
+Railways,ALL,2025,median_delay_days,112.104,SYNTHETIC
+Railways,ALL,2025,avg_expenditure_ratio,0.427,SYNTHETIC
+Railways,ALL,2026,median_progress,67.065,SYNTHETIC
+Railways,ALL,2026,median_delay_days,115.271,SYNTHETIC
+Railways,ALL,2026,avg_expenditure_ratio,0.378,SYNTHETIC
+Water,ALL,2024,median_progress,46.445,SYNTHETIC
+Water,ALL,2024,median_delay_days,70.494,SYNTHETIC
+Water,ALL,2024,avg_expenditure_ratio,0.419,SYNTHETIC
+Water,ALL,2025,median_progress,59.423,SYNTHETIC
+Water,ALL,2025,median_delay_days,113.982,SYNTHETIC
+Water,ALL,2025,avg_expenditure_ratio,0.535,SYNTHETIC
+Water,ALL,2026,median_progress,47.413,SYNTHETIC
+Water,ALL,2026,median_delay_days,16.113,SYNTHETIC
+Water,ALL,2026,avg_expenditure_ratio,0.715,SYNTHETIC
+Power,ALL,2024,median_progress,83.989,SYNTHETIC
+Power,ALL,2024,median_delay_days,10.883,SYNTHETIC
+Power,ALL,2024,avg_expenditure_ratio,0.724,SYNTHETIC
+Power,ALL,2025,median_progress,68.154,SYNTHETIC
+Power,ALL,2025,median_delay_days,42.953,SYNTHETIC
+Power,ALL,2025,avg_expenditure_ratio,0.59,SYNTHETIC
+Power,ALL,2026,median_progress,65.648,SYNTHETIC
+Power,ALL,2026,median_delay_days,23.905,SYNTHETIC
+Power,ALL,2026,avg_expenditure_ratio,0.785,SYNTHETIC
+Urban Development,ALL,2024,median_progress,77.384,SYNTHETIC
+Urban Development,ALL,2024,median_delay_days,47.926,SYNTHETIC
+Urban Development,ALL,2024,avg_expenditure_ratio,0.682,SYNTHETIC
+Urban Development,ALL,2025,median_progress,58.099,SYNTHETIC
+Urban Development,ALL,2025,median_delay_days,113.308,SYNTHETIC
+Urban Development,ALL,2025,avg_expenditure_ratio,0.654,SYNTHETIC
+Urban Development,ALL,2026,median_progress,43.027,SYNTHETIC
+Urban Development,ALL,2026,median_delay_days,47.612,SYNTHETIC
+Urban Development,ALL,2026,avg_expenditure_ratio,0.721,SYNTHETIC
+Healthcare,ALL,2024,median_progress,38.072,SYNTHETIC
+Healthcare,ALL,2024,median_delay_days,77.454,SYNTHETIC
+Healthcare,ALL,2024,avg_expenditure_ratio,0.403,SYNTHETIC
+Healthcare,ALL,2025,median_progress,44.126,SYNTHETIC
+Healthcare,ALL,2025,median_delay_days,34.923,SYNTHETIC
+Healthcare,ALL,2025,avg_expenditure_ratio,0.695,SYNTHETIC
+Healthcare,ALL,2026,median_progress,58.707,SYNTHETIC
+Healthcare,ALL,2026,median_delay_days,80.832,SYNTHETIC
+Healthcare,ALL,2026,avg_expenditure_ratio,0.76,SYNTHETIC
+Education,ALL,2024,median_progress,46.178,SYNTHETIC
+Education,ALL,2024,median_delay_days,112.339,SYNTHETIC
+Education,ALL,2024,avg_expenditure_ratio,0.634,SYNTHETIC
+Education,ALL,2025,median_progress,38.632,SYNTHETIC
+Education,ALL,2025,median_delay_days,27.083,SYNTHETIC
+Education,ALL,2025,avg_expenditure_ratio,0.516,SYNTHETIC
+Education,ALL,2026,median_progress,42.279,SYNTHETIC
+Education,ALL,2026,median_delay_days,95.846,SYNTHETIC
+Education,ALL,2026,avg_expenditure_ratio,0.815,SYNTHETIC
+Ports,ALL,2024,median_progress,65.26,SYNTHETIC
+Ports,ALL,2024,median_delay_days,65.926,SYNTHETIC
+Ports,ALL,2024,avg_expenditure_ratio,0.491,SYNTHETIC
+Ports,ALL,2025,median_progress,82.859,SYNTHETIC
+Ports,ALL,2025,median_delay_days,81.712,SYNTHETIC
+Ports,ALL,2025,avg_expenditure_ratio,0.37,SYNTHETIC
+Ports,ALL,2026,median_progress,70.914,SYNTHETIC
+Ports,ALL,2026,median_delay_days,11.457,SYNTHETIC
+Ports,ALL,2026,avg_expenditure_ratio,0.41,SYNTHETIC

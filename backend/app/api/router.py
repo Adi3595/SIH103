@@ -45,6 +45,14 @@ def get_geospatial_stats(ministry: Optional[str] = None, sector: Optional[str] =
     projects = query.all()
     state_map = {}
 
+    # Pre-fetch all features and map to the latest per project to avoid N+1 DB queries
+    all_features = db.query(ProjectFeature).all()
+    latest_features_map = {}
+    for f in all_features:
+        pid = f.internal_project_id
+        if pid not in latest_features_map or f.reporting_date > latest_features_map[pid].reporting_date:
+            latest_features_map[pid] = f
+
     for p in projects:
         if not p.state: continue
         st = p.state
@@ -52,9 +60,8 @@ def get_geospatial_stats(ministry: Optional[str] = None, sector: Optional[str] =
             state_map[st] = {'count': 0, 'cost': 0.0, 'risk_sum': 0.0, 'critical': 0}
         state_map[st]['count'] += 1
         state_map[st]['cost'] += (p.revised_cost_cr or 0.0)
-        latest = db.query(ProjectFeature).filter(
-            ProjectFeature.internal_project_id == p.internal_project_id
-        ).order_by(desc(ProjectFeature.reporting_date)).first()
+        
+        latest = latest_features_map.get(p.internal_project_id)
         if latest:
             fp = RiskEngine.generate_fingerprint(latest)
             state_map[st]['risk_sum'] += fp['risk_score']
@@ -248,3 +255,74 @@ def chat_with_project(project_id: str, request: ChatRequest, db: Session = Depen
     if "error" in res:
         raise HTTPException(status_code=404, detail=res["error"])
     return {"reply": res["prescription"]}
+
+from fastapi import UploadFile, File
+import pandas as pd
+from sqlalchemy import create_engine
+from app.core.database import DATABASE_URL
+from app.scripts.run_feature_pipeline import run_pipeline
+from fastapi.concurrency import run_in_threadpool
+
+@router.post("/ingestion/upload")
+async def upload_data_ingestion(file: UploadFile = File(...)):
+    """
+    Accepts a CSV file (e.g. D02_project_snapshots.csv), appends it to the DB, 
+    and regenerates the ML features.
+    """
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Only CSV files are allowed")
+        
+    try:
+        df = pd.read_csv(file.file)
+        
+        # Determine table based on columns
+        table_name = None
+        if "physical_progress_pct" in df.columns:
+            table_name = "project_snapshots"
+        elif "issue_status" in df.columns:
+            table_name = "issues"
+        elif "project_name" in df.columns:
+            table_name = "projects"
+        elif "milestone_name" in df.columns:
+            table_name = "milestones"
+        else:
+            raise HTTPException(status_code=400, detail=f"Unknown CSV schema. Please upload Projects, Snapshots, Issues, or Milestones. Found columns: {list(df.columns)}")
+            
+        engine = create_engine(DATABASE_URL)
+        
+        # Prevent UNIQUE constraint failure for projects
+        if table_name == "projects" and "internal_project_id" in df.columns:
+            with engine.connect() as conn:
+                existing_ids = pd.read_sql("SELECT internal_project_id FROM projects", conn)
+                existing_set = set(existing_ids["internal_project_id"])
+            df = df[~df["internal_project_id"].isin(existing_set)]
+            
+            if df.empty:
+                return {"status": "success", "message": "All projects in this file already exist in the database. No new records were added."}
+
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
+        db_columns = [col['name'] for col in inspector.get_columns(table_name)]
+        
+        if table_name == "project_snapshots" and "snapshot_id" not in df.columns:
+            import uuid
+            df["snapshot_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+        elif table_name == "issues" and "issue_id" not in df.columns:
+            import uuid
+            df["issue_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+        elif table_name == "milestones" and "milestone_id" not in df.columns:
+            import uuid
+            df["milestone_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+            
+        cols_to_keep = [c for c in df.columns if c in db_columns]
+        df = df[cols_to_keep]
+
+        df.to_sql(table_name, engine, if_exists="append", index=False)
+        
+        # Run ML feature pipeline asynchronously in threadpool since it uses pandas/sqlalchemy sync
+        await run_in_threadpool(run_pipeline)
+        
+        return {"status": "success", "message": f"Successfully ingested {len(df)} records into {table_name} and regenerated ML features."}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

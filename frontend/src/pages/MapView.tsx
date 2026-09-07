@@ -73,10 +73,10 @@ export default function MapView() {
   }, [data, metric])
 
   const colorScale = scaleLinear<string>()
-    .domain([0, maxVal])
-    .range(metric === 'avg_risk_score' ? ['#fef9c3', '#be123c'] :
-           metric === 'critical_projects' ? ['#fef2f2', '#be123c'] :
-           ['#f0fdfa', '#0d9488'])
+    .domain([0, maxVal / 2, maxVal])
+    .range(metric === 'avg_risk_score' ? ['#fef9c3', '#f59e0b', '#be123c'] :
+           metric === 'critical_projects' ? ['#fef2f2', '#f43f5e', '#be123c'] :
+           ['#f0fdfa', '#2dd4bf', '#0f766e'])
 
   const METRIC_LABELS: Record<string, string> = {
     project_count: 'Project Count',
@@ -156,11 +156,11 @@ export default function MapView() {
                         key={geo.rsmKey}
                         geography={geo}
                         fill={fill}
-                        stroke="#e2e8f0"
-                        strokeWidth={0.5}
+                        stroke="#94a3b8"
+                        strokeWidth={0.7}
                         style={{
                           default: { outline: 'none', transition: 'fill 0.3s ease' },
-                          hover:   { fill: '#0f766e', outline: 'none', cursor: 'pointer' },
+                          hover:   { fill: '#0f766e', outline: 'none', cursor: 'pointer', stroke: '#0f766e', strokeWidth: 1.5 },
                           pressed: { outline: 'none' },
                         }}
                         data-tooltip-id="india-map-tip"
@@ -193,7 +193,7 @@ export default function MapView() {
           <Tooltip
             id="india-map-tip"
             className="!bg-slate-800 !text-white !rounded-2xl !shadow-2xl !border !border-slate-700"
-            style={{ padding: '12px 16px', pointerEvents: 'none' }}
+            style={{ padding: '12px 16px', pointerEvents: 'none', zIndex: 100 }}
           />
 
           {/* Legend */}
@@ -206,8 +206,10 @@ export default function MapView() {
               <div className="w-28 h-2 rounded-full"
                 style={{
                   background: metric === 'project_count'
-                    ? 'linear-gradient(to right, #f0fdfa, #0d9488)'
-                    : 'linear-gradient(to right, #fef9c3, #be123c)'
+                    ? 'linear-gradient(to right, #f0fdfa, #2dd4bf, #0f766e)'
+                    : metric === 'critical_projects'
+                    ? 'linear-gradient(to right, #fef2f2, #f43f5e, #be123c)'
+                    : 'linear-gradient(to right, #fef9c3, #f59e0b, #be123c)'
                 }}
               />
               <span className="text-xs font-bold text-slate-400">High</span>

@@ -1,0 +1,12 @@
+file,rows
+projects.csv,5000
+project_snapshots.csv,120000
+milestones.csv,32468
+issues.csv,45241
+project_outcomes.csv,5000
+project_identity_map.csv,5000
+historical_failure_cases.csv,995
+risk_predictions.csv,20000
+source_documents.csv,5000
+data_quality_events.csv,343
+sector_performance_indicators.csv,72

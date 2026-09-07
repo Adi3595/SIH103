@@ -8,6 +8,7 @@ import Priorities from './pages/Priorities'
 import Analytics from './pages/Analytics'
 import Intelligence from './pages/Intelligence'
 import DataQuality from './pages/DataQuality'
+import DataIngestion from './pages/DataIngestion'
 import Settings from './pages/Settings'
 import MapView from './pages/MapView'
 import Sidebar from './components/layout/Sidebar'
@@ -27,6 +28,7 @@ function AnimatedRoutes() {
         <Route path="/map" element={<MapView />} />
         <Route path="/intelligence" element={<Intelligence />} />
         <Route path="/data" element={<DataQuality />} />
+        <Route path="/ingestion" element={<DataIngestion />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
     </AnimatePresence>

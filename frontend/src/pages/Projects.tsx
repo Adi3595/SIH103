@@ -30,22 +30,29 @@ export default function Projects() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [sectorFilter, setSectorFilter] = useState('ALL')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 100
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/projects?limit=200')
+    axios.get('http://127.0.0.1:8000/api/projects?limit=10000')
       .then(res => { setProjects(res.data); setLoading(false) })
       .catch(() => { setLoading(false); setError(true) })
   }, [])
 
-  const sectors = ['ALL', ...Array.from(new Set(projects.map(p => p.sector))).sort()]
+  const sectors = ['ALL', ...Array.from(new Set(projects.map(p => p.sector).filter(Boolean))).sort()]
 
   const filtered = projects.filter(p => {
-    const matchesSearch = p.project_name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.internal_project_id?.toLowerCase().includes(search.toLowerCase()) ||
-      p.ministry?.toLowerCase().includes(search.toLowerCase())
+    const s = search.toLowerCase()
+    const matchesSearch = s === '' ||
+      (p.project_name && p.project_name.toLowerCase().includes(s)) ||
+      (p.internal_project_id && p.internal_project_id.toLowerCase().includes(s)) ||
+      (p.ministry && p.ministry.toLowerCase().includes(s))
     const matchesSector = sectorFilter === 'ALL' || p.sector === sectorFilter
     return matchesSearch && matchesSector
   })
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage)
+  const paginatedProjects = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   return (
     <PageContainer>
@@ -68,7 +75,7 @@ export default function Projects() {
             type="text"
             placeholder="Search by name, ID, or ministry..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
             className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal-400 transition-all shadow-sm"
           />
         </div>
@@ -76,7 +83,7 @@ export default function Projects() {
           <Filter size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <select
             value={sectorFilter}
-            onChange={e => setSectorFilter(e.target.value)}
+            onChange={e => { setSectorFilter(e.target.value); setCurrentPage(1); }}
             className="pl-8 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal-400 appearance-none cursor-pointer min-w-[160px] transition-all shadow-sm font-medium"
           >
             {sectors.map(s => <option key={s} value={s}>{s}</option>)}
@@ -85,7 +92,7 @@ export default function Projects() {
       </div>
 
       <div className="text-xs text-slate-400 font-semibold uppercase tracking-widest mb-4">
-        Showing {filtered.length} of {projects.length} projects
+        Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} matching projects (Total: {projects.length})
       </div>
 
       {loading ? (
@@ -106,14 +113,14 @@ export default function Projects() {
               </tr>
             </thead>
             <tbody>
-              {filtered.slice(0, 100).map((p, i) => {
+              {paginatedProjects.map((p, i) => {
                 const sColor = SECTOR_COLORS[p.sector] || '#0f766e'
                 return (
                   <motion.tr
                     key={p.internal_project_id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.2, delay: Math.min(i * 0.015, 0.3) }}
+                    transition={{ duration: 0.2, delay: Math.min((i % itemsPerPage) * 0.015, 0.3) }}
                     className="border-b border-slate-100 hover:bg-slate-50 transition-colors group"
                   >
                     <td className="px-5 py-3.5 font-mono text-xs font-bold text-teal-700">{p.internal_project_id}</td>
@@ -137,6 +144,29 @@ export default function Projects() {
               })}
             </tbody>
           </table>
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-500">
+                Page <span className="font-bold text-slate-700">{currentPage}</span> of <span className="font-bold text-slate-700">{totalPages}</span>
+              </span>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-slate-50 text-slate-600 font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-slate-200"
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-slate-50 text-slate-600 font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-slate-200"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </PageContainer>

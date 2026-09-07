@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { NavLink } from "react-router-dom"
-import { LayoutDashboard, FolderKanban, BrainCircuit, TrendingUp, AlertOctagon, BarChart3, Database, Settings, Map } from "lucide-react"
+import { LayoutDashboard, FolderKanban, BrainCircuit, TrendingUp, AlertOctagon, BarChart3, Database, Settings, Map, Upload } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../../utils/cn"
 
@@ -13,6 +13,7 @@ const navItems = [
   { icon: BarChart3,      label: "Analytics",         to: "/analytics",    end: false, accent: "#2dd4bf" },
   { icon: Map,            label: "Geospatial View",   to: "/map",          end: false, accent: "#0d9488" },
   { icon: Database,       label: "Data Quality",      to: "/data",         end: false, accent: "#94a3b8" },
+  { icon: Upload,         label: "Data Ingestion",    to: "/ingestion",    end: false, accent: "#0d9488" },
   { icon: Settings,       label: "Settings",          to: "/settings",     end: false, accent: "#94a3b8" },
 ]
 
