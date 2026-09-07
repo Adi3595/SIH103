@@ -5,21 +5,51 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --surface-page: #f8fafc;
+    --surface-card: #ffffff;
+    --surface-sunken: #f1f5f9;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-default: #e2e8f0;
+    
+    --brand-primary: #0f766e;
+    --brand-secondary: #ccfbf1;
+    
+    /* Semantic Colors */
+    --color-coral: #ef4444;
+  }
+
+  [data-theme="dark"] {
+    --surface-page: #0f172a;
+    --surface-card: #1e293b;
+    --surface-sunken: #0b1120;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --border-default: #334155;
+    
+    --brand-primary: #14b8a6;
+    --brand-secondary: #0f766e;
+  }
+
   *, *::before, *::after {
     box-sizing: border-box;
   }
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #f8fafc;
-    color: #1e293b;
+    background-color: var(--surface-page);
+    color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   ::selection {
-    background-color: #ccfbf1;
-    color: #0f766e;
+    background-color: var(--brand-secondary);
+    color: var(--brand-primary);
   }
 
   code, pre, .font-mono {
@@ -28,64 +58,128 @@
 }
 
 @layer components {
-  /* Milky glass card — primary surface */
+  /* Flat Elevation System */
   .glass-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.03);
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
     border-radius: 1rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
   }
 
-  /* Slightly more opaque panel */
   .glass-panel {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 2px 12px -2px rgba(0, 0, 0, 0.04);
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
     border-radius: 1rem;
     position: relative;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
   }
 }
 
 @layer utilities {
-  /* Prose overrides for AI Advisor markdown */
+  /* Semantic Risk Colors */
+  .risk-critical {
+    background-color: #fecdd3; /* Rose 200 */
+    color: #9f1239; /* Rose 900 */
+  }
+  [data-theme="dark"] .risk-critical {
+    background-color: #4c0519; /* Rose 950 */
+    color: #fda4af; /* Rose 300 */
+  }
+
+  .risk-high {
+    background-color: #fed7aa; /* Orange 200 */
+    color: #9a3412; /* Orange 900 */
+  }
+  [data-theme="dark"] .risk-high {
+    background-color: #431407; /* Orange 950 */
+    color: #fdba74; /* Orange 300 */
+  }
+
+  .risk-medium {
+    background-color: #fef08a; /* Yellow 200 */
+    color: #854d0e; /* Yellow 900 */
+  }
+  [data-theme="dark"] .risk-medium {
+    background-color: #422006; /* Yellow 950 */
+    color: #fde047; /* Yellow 300 */
+  }
+
+  .risk-low {
+    background-color: #bbf7d0; /* Green 200 */
+    color: #166534; /* Green 900 */
+  }
+  [data-theme="dark"] .risk-low {
+    background-color: #052e16; /* Green 950 */
+    color: #86efac; /* Green 300 */
+  }
+
+  /* Trend Colors */
+  .risk-improving {
+    color: #16a34a;
+  }
+  [data-theme="dark"] .risk-improving {
+    color: #4ade80;
+  }
+
+  .risk-rising {
+    color: #dc2626;
+  }
+  [data-theme="dark"] .risk-rising {
+    color: #f87171;
+  }
+
+  /* AI Advisor specific constraints (always dark/light context internally) */
+  .ai-advisor-card {
+    background: linear-gradient(135deg, #151d1a, #1a2420) !important;
+    color: #ffffff !important;
+  }
+  
+  .ai-advisor-card .prose {
+    color: #f8fafc !important;
+  }
+  
+  .ai-advisor-card .prose h1,
+  .ai-advisor-card .prose h2,
+  .ai-advisor-card .prose h3,
+  .ai-advisor-card .prose p,
+  .ai-advisor-card .prose ul li,
+  .ai-advisor-card .prose strong {
+    color: #f8fafc !important;
+  }
+
+  /* General Prose */
   .prose h1, .prose h2, .prose h3 {
-    color: #1e293b;
+    color: var(--text-primary);
     font-weight: 800;
     letter-spacing: -0.02em;
   }
 
   .prose p {
-    color: #475569;
+    color: var(--text-secondary);
     line-height: 1.7;
   }
 
   .prose ul li {
-    color: #334155;
+    color: var(--text-primary);
   }
 
   .prose strong {
-    color: #1e293b;
+    color: var(--text-primary);
     font-weight: 700;
   }
 
   .prose code {
-    background: #f1f5f9;
-    color: #0f766e;
+    background: var(--surface-sunken);
+    color: var(--brand-primary);
     border-radius: 4px;
     padding: 1px 6px;
     font-size: 0.85em;
   }
 
-  /* Smooth scroll */
   .scroll-smooth {
     scroll-behavior: smooth;
   }
 
-  /* Tabular nums for all numeric values */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
@@ -99,10 +193,10 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--border-default);
     border-radius: 99px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: var(--text-muted);
   }
 }

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { Brain, AlertCircle, CheckCircle2 } from 'lucide-react'
@@ -17,7 +17,7 @@ export default function PredictiveML({ projectId }: { projectId: string }) {
   if (loading) {
     return (
       <div className="glass-panel p-6 flex items-center justify-center h-48 opacity-70">
-        <div className="w-8 h-8 border-4 border-amber-200 border-t-amber-600 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin" />
       </div>
     )
   }
@@ -25,24 +25,24 @@ export default function PredictiveML({ projectId }: { projectId: string }) {
   if (!data) return null
 
   const items = [
-    { label: 'Cost Overrun Risk', val: data.cost_overrun.prob, drivers: data.cost_overrun.drivers, color: '#be123c' },
-    { label: 'Schedule Delay Risk', val: data.schedule_delay.prob, drivers: data.schedule_delay.drivers, color: '#b45309' },
-    { label: 'Milestone Failure Risk', val: data.milestone_failure.prob, drivers: data.milestone_failure.drivers, color: '#c2410c' },
-    { label: 'Rapid Escalation Risk', val: data.escalation_risk.prob, drivers: data.escalation_risk.drivers, color: '#be123c' },
+    { label: 'Cost Overrun Risk', val: data.cost_overrun.prob, drivers: data.cost_overrun.drivers, color: '#ef4444' }, // text-coral roughly
+    { label: 'Schedule Delay Risk', val: data.schedule_delay.prob, drivers: data.schedule_delay.drivers, color: '#f59e0b' },
+    { label: 'Milestone Failure Risk', val: data.milestone_failure.prob, drivers: data.milestone_failure.drivers, color: '#f97316' },
+    { label: 'Rapid Escalation Risk', val: data.escalation_risk.prob, drivers: data.escalation_risk.drivers, color: '#ef4444' },
   ]
 
   return (
-    <div className="glass-panel overflow-hidden border border-amber-100">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-[80px] pointer-events-none" />
+    <div className="glass-panel overflow-hidden border border-border-default">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/5 rounded-full blur-[80px] pointer-events-none" />
       
-      <div className="px-6 py-4 flex items-center justify-between border-b border-amber-100 bg-amber-50/50">
+      <div className="px-6 py-4 flex items-center justify-between border-b border-border-default bg-brand-primary/5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 shadow-sm border border-amber-200">
+          <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary shadow-sm border border-brand-primary/20">
             <Brain size={16} />
           </div>
           <div>
-            <h3 className="text-sm font-black text-slate-800 tracking-wide uppercase">Failure Prediction & XAI</h3>
-            <p className="text-[10px] text-amber-700 uppercase tracking-widest mt-0.5 flex items-center gap-1 font-bold">
+            <h3 className="text-sm font-black text-text-primary tracking-wide uppercase">Failure Prediction & XAI</h3>
+            <p className="text-[10px] text-brand-primary uppercase tracking-widest mt-0.5 flex items-center gap-1 font-bold">
               Predictive ML (Layer 04A)
             </p>
           </div>
@@ -53,21 +53,21 @@ export default function PredictiveML({ projectId }: { projectId: string }) {
         {items.map((item, i) => (
           <div key={item.label} className="group relative">
             <div className="flex justify-between items-end mb-1.5">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                {item.val > 50 ? <AlertCircle size={12} className="text-red-500" /> : <CheckCircle2 size={12} className="text-teal-600" />}
+              <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest flex items-center gap-1.5">
+                {item.val > 50 ? <AlertCircle size={12} className="text-coral" /> : <CheckCircle2 size={12} className="text-brand-primary" />}
                 {item.label}
               </span>
-              <span className="text-sm font-black tabular-nums" style={{ color: item.val > 50 ? item.color : '#0f766e' }}>
+              <span className="text-sm font-black tabular-nums" style={{ color: item.val > 50 ? item.color : 'var(--brand-primary)' }}>
                 {item.val}%
               </span>
             </div>
-            <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200/50 mb-2">
+            <div className="h-2 w-full bg-surface-sunken rounded-full overflow-hidden border border-border-default mb-2">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${item.val}%` }}
                 transition={{ duration: 1, delay: i * 0.1 }}
                 className="h-full rounded-full"
-                style={{ backgroundColor: item.val > 50 ? item.color : '#0f766e' }}
+                style={{ backgroundColor: item.val > 50 ? item.color : 'var(--brand-primary)' }}
               />
             </div>
             
@@ -75,17 +75,17 @@ export default function PredictiveML({ projectId }: { projectId: string }) {
             {item.drivers && item.drivers.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {item.drivers.map((driver: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-1.5 bg-slate-100/80 px-2 py-1 rounded text-[9px] font-bold text-slate-600 border border-slate-200/60 uppercase tracking-wider">
+                  <div key={idx} className="flex items-center gap-1.5 bg-surface-sunken px-2 py-1 rounded text-[9px] font-bold text-text-secondary border border-border-default uppercase tracking-wider">
                     <span>{driver.name}</span>
-                    <span className="text-slate-400">|</span>
-                    <span className="text-teal-700">{driver.weight}% Impact</span>
+                    <span className="text-text-muted">|</span>
+                    <span className="text-brand-primary">{driver.weight}% Impact</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
         ))}
-        <p className="text-xs text-slate-400 leading-relaxed mt-4 pt-4 border-t border-slate-100">
+        <p className="text-xs text-text-muted leading-relaxed mt-4 pt-4 border-t border-border-default">
           Probabilities and feature drivers generated by ensemble ML models (XGBoost & LightGBM) trained on historical performance data.
         </p>
       </div>

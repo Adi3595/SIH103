@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { BarChart3 } from 'lucide-react'
@@ -19,10 +19,10 @@ interface SummaryData {
 }
 
 const RISK_DIST = [
-  { name: 'LOW',      key: 'low_risk',      color: '#0f766e', bg: '#ccfbf1' },
-  { name: 'MEDIUM',   key: 'medium_risk',   color: '#b45309', bg: '#fef3c7' },
-  { name: 'HIGH',     key: 'high_risk',     color: '#c2410c', bg: '#ffedd5' },
-  { name: 'CRITICAL', key: 'critical_risk', color: '#be123c', bg: '#ffe4e6' },
+  { name: 'LOW',      key: 'low_risk',      color: 'var(--brand-primary)', bg: 'var(--brand-secondary)' },
+  { name: 'MEDIUM',   key: 'medium_risk',   color: '#f59e0b', bg: '#fef3c7' }, // These specific pie slice colors remain hex for Recharts
+  { name: 'HIGH',     key: 'high_risk',     color: '#f97316', bg: '#ffedd5' },
+  { name: 'CRITICAL', key: 'critical_risk', color: '#ef4444', bg: '#ffe4e6' },
 ]
 
 export default function Analytics() {
@@ -68,20 +68,20 @@ export default function Analytics() {
   })
   const stateData = Object.entries(stateCounts).map(([name, value]) => ({ name, value }))
 
-  const STATE_COLORS = ['#0f766e', '#be123c', '#c2410c', '#b45309', '#475569']
+  const STATE_COLORS = ['#0f766e', '#ef4444', '#f97316', '#f59e0b', '#64748b']
 
   return (
     <PageContainer>
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-1.5 h-4 rounded-full bg-teal-500" />
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Portfolio Intelligence</span>
+          <div className="w-1.5 h-4 rounded-full bg-brand-primary" />
+          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em]">Portfolio Intelligence</span>
         </div>
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">Analytics</h1>
-          <BarChart3 size={22} className="text-teal-500" />
+          <h1 className="text-3xl font-black text-text-primary tracking-tight">Analytics</h1>
+          <BarChart3 size={22} className="text-brand-primary" />
         </div>
-        <p className="text-sm text-slate-500 mt-1">Portfolio-wide risk and performance breakdown.</p>
+        <p className="text-sm text-text-secondary mt-1">Portfolio-wide risk and performance breakdown.</p>
       </div>
 
       {/* KPI Strip */}
@@ -89,13 +89,13 @@ export default function Analytics() {
         {riskDistData.map((d, i) => (
           <motion.div key={d.name}
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-            className="bg-white border border-slate-100 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-all group"
+            className="bg-surface-card border border-border-default rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-all group"
           >
             <div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl" style={{ backgroundColor: d.color }} />
             <div className="absolute top-2 right-2 w-12 h-12 rounded-full opacity-10 group-hover:opacity-20 transition-opacity" style={{ backgroundColor: d.color }} />
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{d.name} RISK</div>
+            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">{d.name} RISK</div>
             <div className="text-4xl font-black tabular-nums" style={{ color: d.color }}>{d.value}</div>
-            <div className="text-xs text-slate-400 font-medium mt-1">{d.pct}% of portfolio</div>
+            <div className="text-xs text-text-muted font-medium mt-1">{d.pct}% of portfolio</div>
           </motion.div>
         ))}
       </div>
@@ -103,7 +103,7 @@ export default function Analytics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Donut chart */}
         <div className="glass-panel p-6">
-          <h3 className="font-bold text-slate-700 text-sm tracking-wide uppercase mb-6">Risk Level Distribution</h3>
+          <h3 className="font-bold text-text-primary text-sm tracking-wide uppercase mb-6">Risk Level Distribution</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -113,9 +113,10 @@ export default function Analytics() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '13px', background: '#fff', color: '#1e293b', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+                  contentStyle={{ borderRadius: '12px', border: '1px solid var(--border-default)', fontSize: '13px', background: 'var(--surface-card)', color: 'var(--text-primary)', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+                  itemStyle={{ color: 'var(--text-primary)' }}
                 />
-                <Legend wrapperStyle={{ fontSize: '12px', color: '#64748b', paddingTop: '12px' }} />
+                <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--text-muted)', paddingTop: '12px' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -123,16 +124,18 @@ export default function Analytics() {
 
         {/* Bar chart */}
         <div className="glass-panel p-6">
-          <h3 className="font-bold text-slate-700 text-sm tracking-wide uppercase mb-6">Portfolio Risk Breakdown (%)</h3>
+          <h3 className="font-bold text-text-primary text-sm tracking-wide uppercase mb-6">Portfolio Risk Breakdown (%)</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={riskDistData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8', fontWeight: 600 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} unit="%" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--text-muted)', fontWeight: 600 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} unit="%" />
                 <Tooltip
                   formatter={(v: any) => [`${v}%`, 'Share']}
-                  contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '13px', background: '#fff', color: '#1e293b', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+                  contentStyle={{ borderRadius: '12px', border: '1px solid var(--border-default)', fontSize: '13px', background: 'var(--surface-card)', color: 'var(--text-primary)', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+                  itemStyle={{ color: 'var(--text-primary)' }}
+                  cursor={{ fill: 'var(--surface-sunken)' }}
                 />
                 <Bar dataKey="pct" radius={[6, 6, 0, 0]}>
                   {riskDistData.map((entry, index) => (
@@ -147,15 +150,17 @@ export default function Analytics() {
 
       {/* Project State distribution */}
       <div className="glass-panel p-6 mb-6">
-        <h3 className="font-bold text-slate-700 text-sm tracking-wide uppercase mb-6">Project State Distribution (Top Priorities)</h3>
+        <h3 className="font-bold text-text-primary text-sm tracking-wide uppercase mb-6">Project State Distribution (Top Priorities)</h3>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={stateData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8', fontWeight: 600 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--text-muted)', fontWeight: 600 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
               <Tooltip
-                contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '13px', background: '#fff', color: '#1e293b', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+                contentStyle={{ borderRadius: '12px', border: '1px solid var(--border-default)', fontSize: '13px', background: 'var(--surface-card)', color: 'var(--text-primary)', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+                itemStyle={{ color: 'var(--text-primary)' }}
+                cursor={{ fill: 'var(--surface-sunken)' }}
               />
               <Bar dataKey="value" name="Projects" radius={[6, 6, 0, 0]}>
                 {stateData.map((_, index) => (
@@ -167,8 +172,8 @@ export default function Analytics() {
         </div>
       </div>
 
-      <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center">
-        <p className="text-xs font-bold text-amber-700 uppercase tracking-widest">
+      <div className="bg-brand-primary/5 border border-brand-primary/20 rounded-xl p-4 text-center mt-8">
+        <p className="text-xs font-bold text-brand-primary uppercase tracking-widest">
           ⚠ Synthetic Data — Not Official PAIMANA/MoSPI Data
         </p>
       </div>

@@ -9,11 +9,11 @@ import {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl shadow-xl px-4 py-3 text-xs min-w-[180px]">
-      <p className="font-black text-slate-700 mb-2 border-b border-slate-100 pb-1.5">{label}</p>
+    <div className="bg-surface-card backdrop-blur-sm border border-border-default rounded-xl shadow-xl px-4 py-3 text-xs min-w-[180px]">
+      <p className="font-black text-text-primary mb-2 border-b border-border-default pb-1.5">{label}</p>
       {payload.map((p: any) => (
         <div key={p.dataKey} className="flex justify-between items-center gap-4 py-0.5">
-          <span className="flex items-center gap-1.5 text-slate-500 font-semibold">
+          <span className="flex items-center gap-1.5 text-text-secondary font-semibold">
             <span className="w-2 h-2 rounded-full inline-block" style={{ background: p.color }} />
             {p.name}
           </span>
@@ -51,12 +51,12 @@ export default function ProjectTimeline({ projectId }: { projectId?: string }) {
 
   if (loading) return (
     <div className="h-[300px] flex items-center justify-center">
-      <div className="w-6 h-6 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
+      <div className="w-6 h-6 border-3 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin" />
     </div>
   )
 
   if (!data.length) return (
-    <div className="h-[300px] flex items-center justify-center text-slate-400 text-sm">
+    <div className="h-[300px] flex items-center justify-center text-text-muted text-sm">
       No historical data available.
     </div>
   )
@@ -65,30 +65,30 @@ export default function ProjectTimeline({ projectId }: { projectId?: string }) {
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
           <XAxis
             dataKey="displayDate" axisLine={false} tickLine={false}
-            tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 600 }}
+            tick={{ fontSize: 10, fill: 'var(--text-muted)', fontWeight: 600 }}
             dy={8} minTickGap={18}
           />
           <YAxis
             yAxisId="health" domain={[0, 100]} axisLine={false} tickLine={false}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
             tickFormatter={v => `${v}%`}
           />
           <YAxis
             yAxisId="risk" orientation="right" domain={[0, 10]} axisLine={false} tickLine={false}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
             tickFormatter={v => `${v}`}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend wrapperStyle={{ paddingTop: '16px', fontSize: '11px', fontWeight: 600 }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--surface-sunken)' }} />
+          <Legend wrapperStyle={{ paddingTop: '16px', fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)' }} />
           <ReferenceLine yAxisId="health" y={40} stroke="#fda4af" strokeDasharray="4 4" strokeWidth={1.5} />
 
-          <Bar yAxisId="risk" dataKey="risk_score" name="Risk Score" fill="#e0e7ff" opacity={0.7} radius={[3, 3, 0, 0]} />
+          <Bar yAxisId="risk" dataKey="risk_score" name="Risk Score" fill="var(--surface-sunken)" stroke="var(--border-default)" radius={[3, 3, 0, 0]} />
 
           <Line yAxisId="health" type="monotone" dataKey="progress_health" name="Progress Health"
-            stroke="#0d9488" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#0d9488' }} />
+            stroke="var(--brand-primary)" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: 'var(--brand-primary)' }} />
           <Line yAxisId="health" type="monotone" dataKey="financial_health" name="Financial Health"
             stroke="#d97706" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#d97706' }} />
           <Line yAxisId="health" type="monotone" dataKey="schedule_health" name="Schedule Health"

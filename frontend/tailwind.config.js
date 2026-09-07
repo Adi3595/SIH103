@@ -32,8 +32,23 @@ export default {
           DEFAULT: '#fbbf24',
           700: '#b45309',
         },
-        surface: '#ffffff',
-        milky: '#f8fafc',
+        surface: {
+          page: 'var(--surface-page)',
+          card: 'var(--surface-card)',
+          sunken: 'var(--surface-sunken)',
+        },
+        text: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+        },
+        border: {
+          default: 'var(--border-default)',
+        },
+        brand: {
+          primary: 'var(--brand-primary)',
+          secondary: 'var(--brand-secondary)',
+        }
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],

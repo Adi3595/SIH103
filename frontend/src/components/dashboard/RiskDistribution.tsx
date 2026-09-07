@@ -1,10 +1,10 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 
 const COLORS = {
-  LOW: '#2a9d8f',
-  MEDIUM: '#e9c46a',
-  HIGH: '#f4a261',
-  CRITICAL: '#e76f51',
+  LOW: 'var(--brand-primary)',
+  MEDIUM: '#f59e0b',
+  HIGH: '#f97316',
+  CRITICAL: '#ef4444',
 }
 
 interface RiskDistributionProps {
@@ -26,8 +26,8 @@ export default function RiskDistribution({ data, total }: RiskDistributionProps)
   ]
 
   return (
-    <div className="bg-surface backdrop-blur-md rounded-xl border border-slate-700/50 p-5 shadow-sm h-full flex flex-col">
-      <h3 className="font-bold text-slate-100 tracking-wide mb-4">PORTFOLIO RISK DISTRIBUTION</h3>
+    <div className="glass-panel p-5 h-full flex flex-col">
+      <h3 className="font-bold text-text-primary tracking-wide mb-4">PORTFOLIO RISK DISTRIBUTION</h3>
       
       <div className="flex-1 relative min-h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -53,22 +53,23 @@ export default function RiskDistribution({ data, total }: RiskDistributionProps)
             </Pie>
             <Tooltip 
               contentStyle={{ 
-                backgroundColor: 'var(--surface)', 
-                border: '1px solid var(--border)',
+                backgroundColor: 'var(--surface-card)', 
+                border: '1px solid var(--border-default)',
                 borderRadius: '8px',
                 boxShadow: 'var(--tw-shadow-elevated)',
                 fontWeight: 'bold',
                 fontFamily: 'var(--font-sans)',
+                color: 'var(--text-primary)'
               }}
-              itemStyle={{ color: 'var(--text-main)' }}
+              itemStyle={{ color: 'var(--text-primary)' }}
             />
           </PieChart>
         </ResponsiveContainer>
         
         {/* Center Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-4xl font-black text-slate-100">{total}</span>
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Projects</span>
+          <span className="text-4xl font-black text-text-primary">{total}</span>
+          <span className="text-xs font-bold text-text-muted uppercase tracking-widest mt-1">Projects</span>
         </div>
       </div>
     </div>
