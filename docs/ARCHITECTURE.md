@@ -1,90 +1,182 @@
-# PAIMANA: System Architecture & Technology Stack
+# System Architecture — Nirikshan
 
-This document details the complete end-to-end architecture, technology choices, and data flow of the PAIMANA platform.
+> SIH 2026 · Problem Statement 26103
 
 ---
 
-## 1. High-Level System Architecture
-
-PAIMANA follows a modern decoupled client-server architecture, utilizing a REST API to interface between the React frontend and the FastAPI + Python ML backend.
+## Deployment Architecture
 
 ```
-┌──────────────────────┐        JSON via REST        ┌─────────────────────────┐
-│     CLIENT TIER      │ ◀─────────────────────────▶ │      SERVER TIER        │
-│                      │                             │                         │
-│  React 18 + Vite     │                             │  FastAPI (Python 3.11)  │
-│  Framer Motion       │                             │  Uvicorn ASGI Server    │
-│  Tailwind CSS        │                             │  SQLAlchemy ORM         │
-│  React Simple Maps   │                             │  Scikit-Learn (ML)      │
-└──────────────────────┘                             └─────────────────────────┘
-                                                                  │
-                                                                  ▼
-                                                     ┌─────────────────────────┐
-                                                     │      DATA LAYER         │
-                                                     │                         │
-                                                     │  SQLite (Relational)    │
-                                                     │  Pickled ML Models      │
-                                                     │  TopoJSON Geodata       │
-                                                     └─────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                  VERCEL CDN (Frontend)               │
+│          React 18 + Vite + Tailwind CSS              │
+│         https://nirikshan103.vercel.app              │
+│                                                      │
+│  Security: CSP · HSTS · X-Frame-Options              │
+│  Caching: Static assets cached 1 year (immutable)    │
+└──────────────────────┬───────────────────────────────┘
+                       │ HTTPS (TLS 1.3)
+                       │ axios + VITE_API_URL env var
+┌──────────────────────▼───────────────────────────────┐
+│               RENDER (Backend API)                   │
+│         FastAPI + Uvicorn (Python 3.11)              │
+│           https://sih103.onrender.com                │
+│                                                      │
+│  Security: Rate limiting · Security headers           │
+│            CORS allowlist · Server header removed    │
+│                                                      │
+│  ┌─────────────────────────────────────────────────┐ │
+│  │     API Router  /api/*                          │ │
+│  │  dashboard · projects · predictions              │ │
+│  │  geospatial · ingestion · prescriptions         │ │
+│  └────────────────────┬────────────────────────────┘ │
+│                       │                              │
+│  ┌────────────────────▼────────────────────────────┐ │
+│  │           ML Risk Engine                        │ │
+│  │  Layer 01: Digital Fingerprint (Rules)          │ │
+│  │  Layer 02: Historical Analogues (KNN)           │ │
+│  │  Layer 03: Risk Momentum (Time-series Δ)        │ │
+│  │  Layer 04: Random Forest + Gemini AI            │ │
+│  └────────────────────┬────────────────────────────┘ │
+│                       │                              │
+│  ┌────────────────────▼────────────────────────────┐ │
+│  │     SQLAlchemy ORM  (parameterised queries)     │ │
+│  └────────────────────┬────────────────────────────┘ │
+└───────────────────────┼──────────────────────────────┘
+                        │ PostgreSQL SSL
+┌───────────────────────▼──────────────────────────────┐
+│              SUPABASE (PostgreSQL)                   │
+│  projects · project_snapshots · milestones · issues  │
+│  Auto-created on startup via SQLAlchemy create_all   │
+└──────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. Frontend Technology Stack
+## Component Breakdown
 
-The client application is built to be a high-performance, real-time "Command Center" prioritizing speed and aesthetics (Milky Matte theme).
+### Frontend (React + Vite)
 
-- **Core Framework:** React 18 + TypeScript. Built using Vite for HMR and optimized production bundling.
-- **Styling Engine:** Tailwind CSS v3. Custom theme configuration `tailwind.config.js` with bespoke colors (`teal-600`, `coral-50`, `glass-panel` utilities).
-- **Routing:** `react-router-dom` v6 for client-side routing (Dashboard, Projects, Map, Settings).
-- **State Management:** React Hooks (`useState`, `useEffect`, `useMemo`). Given the API-heavy nature, state is primarily localized to components handling their own Axios data fetching.
-- **Animations:** `framer-motion` for spring physics, layout transitions, and micro-interactions on hover/load.
-- **Geospatial Mapping:** `react-simple-maps` (d3-geo under the hood) parsing TopoJSON files for high-performance SVG choropleth mapping.
-- **Icons & UI:** `lucide-react` for consistent SVG iconography.
+| Directory | Purpose |
+|-----------|---------|
+| `src/pages/` | Route-level page components (Dashboard, MapView, Projects, etc.) |
+| `src/components/` | Reusable UI components (charts, risk panels, layout) |
+| `src/config/api.ts` | Centralised API base URL — reads `VITE_API_URL` from env |
+| `public/logo.png` | Nirikshan brand logo |
+| `vercel.json` | SPA routing + security headers for Vercel |
 
----
-
-## 3. Backend Technology Stack
-
-The server is responsible for routing, database interaction, and serving as the host for the 4-layer ML Risk Engine.
-
-- **Core Framework:** FastAPI. Chosen for its extreme performance (based on Starlette) and native Pydantic validation (auto-generating OpenAPI docs).
-- **ASGI Server:** Uvicorn running on Python 3.11 for async request handling.
-- **ORM & Database:** SQLAlchemy (Core + ORM) mapping to a local SQLite database (`sih26103.db`). SQLite was chosen for portability in the hackathon prototype, but SQLAlchemy allows zero-code migration to PostgreSQL.
-- **Machine Learning:** `scikit-learn` for Random Forest Classifiers and K-Nearest Neighbors. Models are serialized via `joblib`/`pickle`.
-- **Data Processing:** `pandas` and `numpy` used extensively in the feature engineering pipeline (`pipeline.py`) to calculate rolling windows, deltas, and variances.
-- **Generative AI:** Google's `google-generativeai` SDK interfacing directly with the Native Gemini API (Gemini Flash) for the Layer 04C Prescriptive engine, replacing the legacy OpenRouter implementation.
-- **Performance:** SQLAlchemy `joinedload` is explicitly utilized to eagerly load relational data, resolving critical N+1 query latency issues on heavy endpoints like the Geospatial map.
+**Key Libraries:**
+- `framer-motion` — page and component animations
+- `react-simple-maps` + `d3-scale` — India choropleth map
+- `react-tooltip` — hover tooltips on map
+- `recharts` — analytics charts
+- `react-router-dom` — client-side routing
 
 ---
 
-## 4. Database Schema & Data Flow
+### Backend (FastAPI)
 
-The database contains three primary tables mimicking a highly normalized governmental infrastructure tracking system.
+| File | Purpose |
+|------|---------|
+| `app/main.py` | App factory, middleware stack, startup hook |
+| `app/api/router.py` | All REST API endpoints |
+| `app/core/database.py` | SQLAlchemy engine + session factory |
+| `app/models/` | ORM model definitions (Project, Snapshot, Milestone, Issue) |
+| `app/ml/risk_engine/` | 4-layer ML intelligence engine |
 
-1. **`projects` Table:**
-   - **Fields:** `internal_project_id` (PK), `project_name`, `ministry`, `sector`, `state`, `original_cost_cr`, `revised_cost_cr`, `original_end_date`, `revised_end_date`.
-   - **Purpose:** Static registry of all assets.
+**Middleware Stack (in order):**
+1. `SecurityHeadersMiddleware` — injects all security headers
+2. `CORSMiddleware` — allows only known origins
+3. `Limiter` (slowapi) — rate limiting per IP
 
-2. **`project_snapshots` Table:**
-   - **Fields:** `snapshot_id` (PK), `internal_project_id` (FK), `reporting_month`, `physical_progress_pct`, `financial_expenditure_cr`, `milestones_completed`, `active_issues_count`.
-   - **Purpose:** The raw time-series data reported by on-ground contractors every month.
+---
 
-3. **`project_features` Table:**
-   - **Fields:** 19 engineered float columns (e.g., `progress_velocity`, `delay_momentum`, `issue_pressure`).
-   - **Purpose:** The ML-ready vectors. Generated offline by iterating through `project_snapshots` and calculating temporal derivatives. This prevents the FastAPI server from doing heavy pandas dataframe calculations on the fly.
+### ML Engine
 
-### End-to-End Request Flow Example (Project Detail Page)
-1. **Frontend:** User clicks a project in the Priority Table. React Router navigates to `/projects/PAI-00001`.
-2. **Frontend:** Component mounts, fires concurrent `axios.get` requests for:
-   - `/api/projects/PAI-00001` (Basic Data)
-   - `/api/projects/PAI-00001/fingerprint` (Layer 1)
-   - `/api/projects/PAI-00001/momentum` (Layer 3)
-   - `/api/projects/PAI-00001/predictions` (Layer 4A)
-3. **Backend:** FastAPI receives the requests.
-4. **Backend DB:** SQLAlchemy queries the `project_features` table for the latest row for `PAI-00001`.
-5. **Backend ML:** The row is passed to the Singletons:
-   - `RiskEngine.generate_fingerprint()`
-   - `PredictiveEngine.predict()` (Loads `.pkl` into memory, calls `.predict_proba()`)
-6. **Backend Response:** Pydantic serializes the Python dictionaries into JSON.
-7. **Frontend:** React updates state, triggering Framer Motion to animate the charts and display the data.
+```
+risk_engine/
+├── engine.py         # Layer 01: Digital Fingerprint (5D rule-based scoring)
+├── analogues.py      # Layer 02: KNN Historical Pattern Matching
+├── momentum.py       # Layer 03: Time-series Risk Velocity (Δ score / Δ time)
+├── predictive.py     # Layer 04a: Random Forest Classifier (.pkl model)
+└── prescriptive.py   # Layer 04b: Gemini Flash 2.0 AI Prescriptions
+```
+
+**Risk Score Scale:** 0–100  
+- 0–30: Low Risk (green)
+- 31–50: Medium Risk (yellow)
+- 51–75: High Risk (orange)
+- 76–100: Critical Risk (red)
+
+---
+
+### Database Schema
+
+```sql
+-- Master project data
+projects (
+  id, project_name, ministry, sector, state,
+  total_cost_cr, start_date, expected_end_date,
+  current_progress_pct, risk_category, risk_score
+)
+
+-- Periodic health snapshots (ML training source)
+project_snapshots (
+  id, project_id, snapshot_date,
+  progress_pct, expenditure_cr,
+  schedule_delay_months, issues_count
+)
+
+-- Milestone tracking
+milestones (
+  id, project_id, name, target_date,
+  actual_date, status
+)
+
+-- Issue registry
+issues (
+  id, project_id, issue_type,
+  severity, description, raised_date, resolved_date
+)
+```
+
+> All tables are **auto-created on first startup** — no manual migration needed.
+
+---
+
+## Data Flow
+
+```
+CSV Upload (Data Ingestion page)
+        │
+        ▼
+FastAPI /api/ingestion/upload
+        │ (list[UploadFile] — multiple files)
+        ▼
+pandas read_csv → SQLAlchemy bulk insert
+        │
+        ▼
+Supabase PostgreSQL tables
+        │
+        ▼
+ML Engine computes fingerprint + risk scores
+        │
+        ▼
+React Dashboard renders real-time intelligence
+```
+
+---
+
+## Environment Variables
+
+### Backend (Render)
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string (Supabase) |
+| `GEMINI_API_KEY` | Google AI Studio API key |
+| `PYTHON_VERSION` | `3.11.0` |
+
+### Frontend (Vercel)
+| Variable | Description |
+|----------|-------------|
+| `VITE_API_URL` | Backend API base URL (baked into `.env.production`) |

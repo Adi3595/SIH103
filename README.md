@@ -1,25 +1,20 @@
-# PAIMANA — Project Analytics & Intelligence for Monitoring National Assets
+# Nirikshan — Monitor · Predict · Build Better
 
 <div align="center">
 
-```
-██████╗  █████╗ ██╗███╗   ███╗ █████╗ ███╗   ██╗ █████╗
-██╔══██╗██╔══██╗██║████╗ ████║██╔══██╗████╗  ██║██╔══██╗
-██████╔╝███████║██║██╔████╔██║███████║██╔██╗ ██║███████║
-██╔═══╝ ██╔══██║██║██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║
-██║     ██║  ██║██║██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║
-╚═╝     ╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝
-```
+![Nirikshan Logo](frontend/public/logo.png)
 
-**AI-Powered Command Center for National Infrastructure Risk Intelligence**
+**AI-Powered Predictive & Prescriptive Infrastructure Monitoring System**
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-nirikshan103.vercel.app-22C55E?style=for-the-badge)](https://nirikshan103.vercel.app)
+[![API](https://img.shields.io/badge/🔌_Backend_API-sih103.onrender.com-009688?style=for-the-badge)](https://sih103.onrender.com)
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python)](https://python.org)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4-F7931E?style=for-the-badge&logo=scikit-learn)](https://scikit-learn.org)
-[![SQLite](https://img.shields.io/badge/SQLite-9.1MB-003B57?style=for-the-badge&logo=sqlite)](https://sqlite.org)
-[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev)
-[![License](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel)](https://vercel.com)
 
 > **SIH 2026 · Problem Statement 26103**  
 > *Designed for the Ministry of Statistics and Programme Implementation (MoSPI)*
@@ -28,73 +23,89 @@
 
 ---
 
-## ⚡ What is PAIMANA?
+## ⚡ What is Nirikshan?
 
-PAIMANA is a **full-stack, AI-driven intelligence platform** that helps government officials monitor, predict, and intervene in at-risk national infrastructure projects. It processes data from 750+ projects across 20 Indian states and runs **four ML layers** to surface risk before it becomes a crisis.
+**Nirikshan** (Hindi: निरीक्षण — *Inspection / Surveillance*) is a full-stack, AI-driven intelligence platform that helps government officials monitor, predict, and intervene in at-risk national infrastructure projects. It processes data from 750+ projects across 20 Indian states and runs **four ML layers** to surface risk before it becomes a crisis.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        PAIMANA ENGINE                           │
-│                                                                 │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌───────────┐  │
-│  │ LAYER 01 │──▶│ LAYER 02 │──▶│ LAYER 03 │──▶│ LAYER 04  │  │
-│  │ Digital  │   │Historical│   │  Risk    │   │Predictive │  │
-│  │Fingerprint│  │Analogues │   │ Momentum │   │   + AI    │  │
-│  │ (Rules)  │   │  (KNN)   │   │  (Δ/t)  │   │(RF + LLM) │  │
-│  └──────────┘   └──────────┘   └──────────┘   └───────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+│                       NIRIKSHAN ENGINE                           │
+│                                                                  │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌───────────┐   │
+│  │ LAYER 01 │──▶│ LAYER 02 │──▶│ LAYER 03 │──▶│ LAYER 04  │   │
+│  │ Digital  │   │Historical│   │  Risk    │   │Predictive │   │
+│  │Fingerprint│  │Analogues │   │ Momentum │   │   + AI    │   │
+│  │ (Rules)  │   │  (KNN)   │   │  (Δ/t)   │   │(RF + LLM) │   │
+│  └──────────┘   └──────────┘   └──────────┘   └───────────┘   │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🎬 Live Demo
+## 🌐 Live Deployment
+
+| Service | URL |
+|---------|-----|
+| **Frontend** (Vercel) | https://nirikshan103.vercel.app |
+| **Backend API** (Render) | https://sih103.onrender.com |
+| **Database** | Supabase PostgreSQL (managed cloud) |
+
+> **Note for Judges:** The backend is hosted on Render's free tier. If the first request is slow (~30s), it's waking from idle. All subsequent requests are fast.
+
+---
+
+## 🎬 Feature Overview
 
 | Page | Description |
 |------|-------------|
 | **Dashboard** | KPI command center — critical, high, rising risk counts |
-| **Projects** | Full searchable/filterable table of all 750 projects |
-| **Project Dossier** | Per-project deep dive with all 4 ML layers |
+| **Projects** | Full searchable/filterable table of all 750+ projects |
+| **Project Dossier** | Per-project deep dive with all 4 ML intelligence layers |
 | **Rising Risk** | Momentum-sorted early warning tracker |
 | **Priority Queue** | Projects grouped by urgency requiring intervention |
 | **Analytics** | Portfolio-level charts and risk distribution |
-| **🗺️ Geospatial Map** | Interactive India choropleth — hover for live state stats |
+| **🗺️ Geospatial Map** | Interactive India choropleth — hover to see state name; colour-coded by risk/count |
+| **Data Ingestion** | Upload CSVs to populate the system |
 
 ---
 
 ## 🏗️ System Architecture
 
 ```
-                        ┌─────────────────────────────┐
-                        │         BROWSER              │
-                        │   React 18 + Vite + TW CSS  │
-                        │                             │
-                        │  ┌────────┐  ┌───────────┐  │
-                        │  │  Pages │  │ Components│  │
-                        │  └────┬───┘  └─────┬─────┘  │
-                        └───────┼────────────┼─────────┘
-                                │   axios    │
-                        ┌───────▼────────────▼─────────┐
-                        │       FastAPI Backend         │
-                        │       Port 8000              │
-                        │                             │
-                        │  ┌────────────────────────┐  │
-                        │  │     API Router          │  │
-                        │  │  /projects, /dashboard  │  │
-                        │  │  /predictions, /map...  │  │
-                        │  └───────────┬─────────────┘  │
-                        │             │                 │
-                        │  ┌──────────▼──────────────┐  │
-                        │  │     ML Risk Engine       │  │
-                        │  │  engine · momentum       │  │
-                        │  │  analogues · predictive  │  │
-                        │  │  prescriptive (Gemini AI)│  │
-                        │  └──────────┬──────────────┘  │
-                        │             │                 │
-                        │  ┌──────────▼──────────────┐  │
-                        │  │  SQLite DB + .pkl Models │  │
-                        │  │  sih26103.db (9MB)       │  │
-                        │  └─────────────────────────┘  │
-                        └─────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                  VERCEL CDN (Frontend)                │
+│          React 18 + Vite + Tailwind CSS               │
+│         https://nirikshan103.vercel.app               │
+└───────────────────────┬──────────────────────────────┘
+                        │ HTTPS + CORS
+                        │ axios + VITE_API_URL
+┌───────────────────────▼──────────────────────────────┐
+│               RENDER (Backend API)                    │
+│         FastAPI + Uvicorn (Python 3.11)               │
+│           https://sih103.onrender.com                 │
+│                                                       │
+│  ┌─────────────────────────────────────────────────┐ │
+│  │              API Router  (/api/*)               │ │
+│  │   /dashboard  /projects  /predictions           │ │
+│  │   /geospatial  /ingestion  /prescriptions       │ │
+│  └───────────────────┬─────────────────────────────┘ │
+│                      │                               │
+│  ┌───────────────────▼─────────────────────────────┐ │
+│  │             ML Risk Engine                      │ │
+│  │  engine · momentum · analogues · predictive     │ │
+│  │  prescriptive (Google Gemini Flash 2.0)         │ │
+│  └───────────────────┬─────────────────────────────┘ │
+│                      │                               │
+│  ┌───────────────────▼─────────────────────────────┐ │
+│  │         SQLAlchemy ORM + .pkl Models            │ │
+│  └─────────────────────────────────────────────────┘ │
+└───────────────────────┬──────────────────────────────┘
+                        │
+┌───────────────────────▼──────────────────────────────┐
+│              SUPABASE (PostgreSQL)                    │
+│    projects · project_snapshots · milestones          │
+│    issues · (auto-created on first startup)           │
+└──────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -114,239 +125,165 @@ Converts raw project snapshot data into a **5-dimension health vector** scored 0
 | `milestone_health` | Milestone completion rate, delay rate |
 | `overall_risk_score` | Weighted composite (0–100 scale) |
 
----
-
 ### Layer 02 — Historical Analogues `analogues.py`
 > KNN-based pattern matching against completed project history
 
-Finds the **3 most similar past projects** using Euclidean distance across the fingerprint vector. Surfaces:
-- Whether similar projects succeeded or overran
-- Average cost/schedule overrun of analogues
-- Similarity score
-
----
+Finds the **5 most similar past projects** using K-Nearest Neighbours on the 5D fingerprint vector. Returns outcome probabilities (on-time, delayed, stalled) from their actual historical results.
 
 ### Layer 03 — Risk Momentum `momentum.py`
-> Time-series acceleration detection
+> Time-series velocity analysis (Δ risk / Δ time)
 
-Computes the **rate of change** of each dimension over the last 3 months:
-- `overall_momentum` = Δ risk_score / time
-- Classifies as: `ACCELERATING > RISING > ELEVATED > STABLE`
-- Surfaces the **fastest deteriorating dimension**
+Calculates the **rate of change** of risk score across consecutive snapshots. A project with accelerating momentum (rising slope) is flagged as an early warning even if its current absolute risk is moderate.
 
----
+### Layer 04 — Predictive ML + AI Prescription `predictive.py` + `prescriptive.py`
+> Random Forest classifier + Google Gemini Flash LLM
 
-### Layer 04A — Predictive ML `predictive.py`
-> 4 Random Forest classifiers trained on 18,000 row snapshots
-
-| Model | Target | Threshold |
-|-------|--------|-----------|
-| `cost_overrun_model.pkl` | P(cost > 110%) | 0.35 |
-| `schedule_delay_model.pkl` | P(delay > 90 days) | 0.30 |
-| `milestone_failure_model.pkl` | P(milestone miss) | 0.25 |
-| `escalation_model.pkl` | P(rapid escalation) | 0.30 |
-
-All models use `class_weight='balanced'` to handle label skew.
+- **Random Forest** classifies the project into `low / medium / high / critical` risk categories.
+- **Gemini Flash 2.0** generates natural-language prescriptions — actionable, minister-ready intervention recommendations based on all 4 layers of context.
 
 ---
 
-### Layer 04C — Prescriptive AI `prescriptive.py`
-> LLM-generated actionable recommendations via Google Gemini API
+## 🔒 Security
 
-Uses **Gemini Flash (2.5/3.0/3.5)** with an automated fallback loop to generate structured interventions:
-- Root cause analysis
-- 3-5 specific action items
-- Escalation recommendation
+| Layer | Measure |
+|-------|---------|
+| **Rate Limiting** | `slowapi` — 200 req/min global, 30 req/min on root |
+| **Security Headers** | X-Content-Type-Options, X-Frame-Options, X-XSS-Protection |
+| **HSTS** | `max-age=31536000` — HTTPS enforced for 1 year |
+| **Content Security Policy** | Locks scripts/styles/API calls to known origins |
+| **CORS** | Locked to `nirikshan103.vercel.app` + localhost only |
+| **SQL Injection** | Prevented by SQLAlchemy ORM parameterised queries |
+| **Server Fingerprint** | `Server` header removed from all responses |
+| **Vercel Headers** | CSP, HSTS, X-Frame-Options enforced at CDN edge |
+
+---
+
+## 🗄️ Database Schema
+
+```sql
+projects            -- Project master data (state, sector, budget, dates)
+project_snapshots   -- Monthly/periodic health snapshots (the fingerprint source)
+milestones          -- Project milestone tracking
+issues              -- Flagged project issues
+```
+> Tables are **auto-created on first startup** via `SQLAlchemy Base.metadata.create_all()`. No manual SQL needed.
+
+---
+
+## 🚀 Local Development Setup
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- A Supabase project (or use SQLite locally)
+
+### Backend
+```bash
+cd backend
+python -m venv venv
+.\venv\Scripts\activate         # Windows
+pip install -r requirements.txt
+
+# Create .env
+echo "DATABASE_URL=sqlite:///./sih26103.db" > .env
+echo "GEMINI_API_KEY=your_key_here" >> .env
+
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+### Frontend
+```bash
+cd frontend
+npm install
+
+# Create .env
+echo "VITE_API_URL=http://127.0.0.1:8000" > .env
+
+npm run dev
+```
+
+> App runs at `http://localhost:5173`
+
+---
+
+## ☁️ Production Deployment
+
+| Service | Provider | Config File |
+|---------|----------|-------------|
+| Frontend | Vercel | `frontend/vercel.json` |
+| Backend | Render | `backend/render.yaml` |
+| Database | Supabase | Managed PostgreSQL |
+
+**Environment variables needed on Render:**
+```
+DATABASE_URL   = postgresql://...your supabase connection string...
+GEMINI_API_KEY = your_gemini_api_key
+PYTHON_VERSION = 3.11.0
+```
+
+**Vercel settings:**
+- Root Directory: `frontend`
+- Framework: Vite (auto-detected)
+- No extra env vars needed (API URL is baked into `.env.production`)
 
 ---
 
 ## 📁 Project Structure
 
 ```
-Proto/
-├── 📂 backend/
-│   ├── 📂 app/
-│   │   ├── 📂 api/
-│   │   │   └── router.py          # All FastAPI endpoints
-│   │   ├── 📂 core/
-│   │   │   └── database.py        # SQLAlchemy engine + session
-│   │   ├── 📂 ml/
-│   │   │   ├── 📂 features/       # Feature engineering pipeline
-│   │   │   ├── 📂 models/         # Trained .pkl files
-│   │   │   └── 📂 risk_engine/
-│   │   │       ├── engine.py      # Layer 01: Fingerprint
-│   │   │       ├── analogues.py   # Layer 02: KNN Analogues
-│   │   │       ├── momentum.py    # Layer 03: Momentum
-│   │   │       ├── predictive.py  # Layer 04A: RF Classifiers
-│   │   │       └── prescriptive.py# Layer 04C: LLM Advisor
-│   │   ├── 📂 models/             # SQLAlchemy ORM models
-│   │   ├── 📂 schemas/            # Pydantic response schemas
-│   │   └── main.py                # FastAPI app entry point
-│   ├── train_models.py            # Retrain all 4 RF models
-│   └── sih26103.db                # SQLite database (9MB)
-│
-├── 📂 frontend/
-│   ├── 📂 src/
-│   │   ├── 📂 pages/              # Full-page route components
-│   │   ├── 📂 components/
-│   │   │   ├── 📂 layout/         # Sidebar, PageContainer
-│   │   │   ├── 📂 dashboard/      # KPI cards, charts
-│   │   │   ├── 📂 risk/           # Fingerprint, Momentum, etc.
-│   │   │   ├── 📂 charts/         # Timeline chart
-│   │   │   └── 📂 ui/             # Skeleton, ErrorState
-│   │   ├── index.css              # Milky Matte design tokens
-│   │   └── App.tsx                # Router + layout
-│   ├── 📂 public/
-│   │   └── india_states.json      # TopoJSON for map view
-│   └── tailwind.config.js
-│
-├── docker-compose.yml
-└── README.md
+Nirikshan/
+├── backend/
+│   ├── app/
+│   │   ├── api/router.py          # All API endpoints
+│   │   ├── core/database.py       # DB engine + session
+│   │   ├── ml/
+│   │   │   └── risk_engine/
+│   │   │       ├── engine.py      # Layer 01: Digital Fingerprint
+│   │   │       ├── analogues.py   # Layer 02: Historical Analogues
+│   │   │       ├── momentum.py    # Layer 03: Risk Momentum
+│   │   │       ├── predictive.py  # Layer 04: Random Forest
+│   │   │       └── prescriptive.py # AI (Gemini) Prescriptions
+│   │   ├── models/                # SQLAlchemy ORM models
+│   │   └── main.py                # FastAPI app + security middleware
+│   ├── requirements.txt
+│   └── render.yaml                # Render deployment blueprint
+├── frontend/
+│   ├── src/
+│   │   ├── components/            # Reusable UI components
+│   │   ├── pages/                 # Route-level page components
+│   │   └── config/api.ts          # Centralised API base URL
+│   ├── public/logo.png            # Nirikshan logo
+│   ├── vercel.json                # Vercel + security headers config
+│   └── .env.production            # Points to live Render API
+└── docs/                          # Architecture, ML, API reference docs
 ```
 
 ---
 
-## 🚀 Quick Start
+## 📄 Documentation
 
-### Prerequisites
-- Python 3.11+
-- Node.js 18+
-- Git
-
-### 1. Clone & Setup Backend
-
-```bash
-git clone https://github.com/Adi3595/SIH103.git
-cd SIH103/backend
-
-# Create virtual environment
-python -m venv venv
-.\venv\Scripts\activate          # Windows
-# source venv/bin/activate       # macOS/Linux
-
-# Install dependencies
-pip install fastapi uvicorn sqlalchemy alembic scikit-learn pandas numpy requests python-dotenv pydantic
-
-# Configure environment
-cp .env.example .env
-# Edit .env — add your GEMINI_API_KEY
-```
-
-### 2. Initialize Database
-
-```bash
-# Run migrations
-alembic upgrade head
-
-# The SQLite DB is already included at sih26103.db
-# If you need to re-seed, run:
-python app/scripts/run_feature_pipeline.py
-```
-
-### 3. Train ML Models (optional — pre-trained .pkl included)
-
-```bash
-python train_models.py
-# Creates 4 model + 4 scaler .pkl files in app/ml/models/
-```
-
-### 4. Start Backend
-
-```bash
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-# API docs at http://127.0.0.1:8000/docs
-```
-
-### 5. Setup & Start Frontend
-
-```bash
-cd ../frontend
-npm install
-npm run dev
-# App at http://localhost:5173
-```
-
----
-
-## 🔌 API Reference
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/projects` | List all projects (paginated) |
-| `GET` | `/api/projects/{id}` | Single project details |
-| `GET` | `/api/projects/geospatial` | State-level aggregated stats |
-| `GET` | `/api/projects/{id}/fingerprint` | Layer 01: Health dimensions |
-| `GET` | `/api/projects/{id}/momentum` | Layer 03: Risk momentum report |
-| `GET` | `/api/projects/{id}/analogues` | Layer 02: KNN similar projects |
-| `GET` | `/api/projects/{id}/predictions` | Layer 04A: ML risk probabilities |
-| `GET` | `/api/projects/{id}/prescription` | Layer 04C: AI recommendations |
-| `GET` | `/api/dashboard/summary` | KPI summary + top priorities |
-| `GET` | `/api/dashboard/rising` | Rising risk portfolio |
-
-**Full interactive docs:** http://127.0.0.1:8000/docs
-
----
-
-## 🎨 Design System
-
-PAIMANA uses a **Milky Matte** aesthetic:
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `glass-panel` | `bg-white/80 backdrop-blur-xl border border-white/60` | Card containers |
-| `glass-card` | `bg-white/60 backdrop-blur-lg rounded-2xl shadow-soft` | Sidebar |
-| `text-slate-800` | Dark slate | Primary text |
-| `teal-600` (#0d9488) | Teal | Primary accent |
-| `coral` (#F4725A) | Coral | Critical alerts |
-| `amber` | Amber | Warnings |
-
----
-
-## 🗺️ Environment Variables
-
-```env
-# backend/.env
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Optional — defaults shown
-DATABASE_URL=sqlite:///./sih26103.db
-```
-
----
-
-## 🧪 Dataset
-
-| Table | Records | Description |
-|-------|---------|-------------|
-| `projects` | 750 | Master project registry |
-| `project_snapshots` | 18,000 | Monthly reporting snapshots |
-| `project_features` | 18,000 | Engineered ML feature rows |
-
-> ⚠️ **Synthetic Dataset** — Generated for SIH prototype validation.  
-> Not official PAIMANA/MoSPI data.
+| Document | Description |
+|----------|-------------|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design and component relationships |
+| [ML_PIPELINE.md](docs/ML_PIPELINE.md) | Detailed ML layer documentation |
+| [API_REFERENCE.md](docs/API_REFERENCE.md) | All REST endpoints with request/response schemas |
+| [SETUP_GUIDE.md](docs/SETUP_GUIDE.md) | Local and production setup instructions |
+| [SECURITY.md](docs/SECURITY.md) | Security measures and threat model |
+| [DATASET_GUIDE.md](docs/DATASET_GUIDE.md) | Data schema and ingestion format |
 
 ---
 
 ## 👥 Team
 
-**SIH 2026 — Team SIH26103**
-
-Built with ❤️ for the **Smart India Hackathon 2026**  
-Problem Statement: *AI-Based Risk Assessment for Central Sector Projects*  
-Ministry: *MoSPI (Ministry of Statistics and Programme Implementation)*
-
----
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE)
+**SIH 2026 · Team SIH26103**  
+Problem Statement: AI-based monitoring system for national infrastructure projects  
+Ministry: MoSPI (Ministry of Statistics and Programme Implementation)
 
 ---
 
 <div align="center">
 
-**[⬆ Back to Top](#paimana--project-analytics--intelligence-for-monitoring-national-assets)**
-
-*If this project helped you, please ⭐ the repo!*
+*Nirikshan — Monitor · Predict · Build Better*  
+Built with ❤️ for Smart India Hackathon 2026
 
 </div>
