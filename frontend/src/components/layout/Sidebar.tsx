@@ -26,15 +26,17 @@ export default function Sidebar() {
       onMouseLeave={() => setIsExpanded(false)}
       className="h-full shrink-0 flex flex-col relative z-20 glass-card mx-3 my-3 border border-white/60"
     >
-      <div className="relative px-4 py-5 flex items-center gap-3 border-b border-slate-100">
-        <div className="w-8 h-8 shrink-0 rounded-lg flex items-center justify-center bg-teal text-white shadow-glow-teal">
-          <div className="w-3 h-3 bg-white" style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
-        </div>
+      <div className="relative px-3 py-4 flex items-center gap-3 border-b border-slate-100">
+        <img
+          src="/logo.png"
+          alt="Nirikshan Logo"
+          className="w-9 h-9 shrink-0 rounded-xl object-cover shadow-md"
+        />
         <AnimatePresence>
           {isExpanded && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col">
-              <span className="text-xs font-black text-slate-800 tracking-widest uppercase">PAIMANA</span>
-              <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">AI Engine</span>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col overflow-hidden">
+              <span className="text-xs font-black text-slate-800 tracking-widest uppercase whitespace-nowrap">Nirikshan</span>
+              <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase whitespace-nowrap">Monitor · Predict · Build</span>
             </motion.div>
           )}
         </AnimatePresence>
