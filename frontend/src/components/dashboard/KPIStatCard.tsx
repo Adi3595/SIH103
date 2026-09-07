@@ -7,14 +7,14 @@ export default function KPIStatCard({ title, value, subtitle, icon: Icon, color,
     >
       <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-10 group-hover:scale-150 transition-transform duration-700 pointer-events-none" style={{ backgroundColor: color }} />
       <div className="flex justify-between items-start mb-4">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white shadow-sm border border-slate-100" style={{ color }}>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-surface-page shadow-sm border border-border-default" style={{ color }}>
           <Icon size={20} />
         </div>
       </div>
       <div>
-        <h3 className="text-slate-500 font-bold text-xs uppercase tracking-widest mb-1">{title}</h3>
-        <div className="text-3xl font-black text-slate-800 tabular-nums">{value}</div>
-        <p className="text-slate-400 text-xs font-medium mt-2">{subtitle}</p>
+        <h3 className="text-text-secondary font-bold text-xs uppercase tracking-widest mb-1">{title}</h3>
+        <div className="text-3xl font-black text-text-primary tabular-nums">{value}</div>
+        <p className="text-text-muted text-xs font-medium mt-2">{subtitle}</p>
       </div>
     </motion.div>
   )

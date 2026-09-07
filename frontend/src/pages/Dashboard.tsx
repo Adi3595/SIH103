@@ -38,10 +38,10 @@ export default function Dashboard() {
   return (
     <PageContainer>
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-800 tracking-tight mb-2">
+        <h1 className="text-3xl font-black text-text-primary tracking-tight mb-2">
           Portfolio Intelligence
         </h1>
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-sm font-medium text-text-secondary">
           Real-time oversight of national infrastructure projects.
         </p>
       </div>
