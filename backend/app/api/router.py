@@ -45,13 +45,20 @@ def get_geospatial_stats(ministry: Optional[str] = None, sector: Optional[str] =
     projects = query.all()
     state_map = {}
 
-    # Pre-fetch all features and map to the latest per project to avoid N+1 DB queries
-    all_features = db.query(ProjectFeature).all()
-    latest_features_map = {}
-    for f in all_features:
-        pid = f.internal_project_id
-        if pid not in latest_features_map or f.reporting_date > latest_features_map[pid].reporting_date:
-            latest_features_map[pid] = f
+    from sqlalchemy import func
+    # Use DB to fetch ONLY the latest feature per project (avoids loading 100,000+ rows into RAM)
+    subq = db.query(
+        ProjectFeature.internal_project_id,
+        func.max(ProjectFeature.reporting_date).label('max_date')
+    ).group_by(ProjectFeature.internal_project_id).subquery()
+
+    latest_features_list = db.query(ProjectFeature).join(
+        subq,
+        (ProjectFeature.internal_project_id == subq.c.internal_project_id) &
+        (ProjectFeature.reporting_date == subq.c.max_date)
+    ).all()
+    
+    latest_features_map = {f.internal_project_id: f for f in latest_features_list}
 
     for p in projects:
         if not p.state: continue
@@ -113,15 +120,21 @@ def get_project_fingerprint_history(project_id: str, db: Session = Depends(get_d
 
 @router.get("/dashboard/summary", response_model=DashboardSummaryResponse)
 def get_dashboard_summary(db: Session = Depends(get_db)):
-    # Get the latest feature for all projects
-    # Since sqlite doesn't support distinct on easily, we can just fetch all and group in python
-    # Or for this MVP, fetch all features and take the latest per project
-    all_features = db.query(ProjectFeature).order_by(desc(ProjectFeature.reporting_date)).all()
+    from sqlalchemy import func
     
-    latest_features = {}
-    for f in all_features:
-        if f.internal_project_id not in latest_features:
-            latest_features[f.internal_project_id] = f
+    # Use DB to fetch ONLY the latest feature per project (avoids loading 100,000+ rows into RAM)
+    subq = db.query(
+        ProjectFeature.internal_project_id,
+        func.max(ProjectFeature.reporting_date).label('max_date')
+    ).group_by(ProjectFeature.internal_project_id).subquery()
+
+    latest_features_list = db.query(ProjectFeature).join(
+        subq,
+        (ProjectFeature.internal_project_id == subq.c.internal_project_id) &
+        (ProjectFeature.reporting_date == subq.c.max_date)
+    ).all()
+    
+    latest_features = {f.internal_project_id: f for f in latest_features_list}
             
     fingerprints = [RiskEngine.generate_fingerprint(f) for f in latest_features.values()]
     
@@ -167,11 +180,21 @@ def get_rising_risk_portfolio(limit: int = 20, db: Session = Depends(get_db)):
     Returns momentum reports for the top N projects with the highest overall_momentum.
     Used by the Rising Risk Tracker page (sorted by acceleration, not raw score).
     """
-    all_features = db.query(ProjectFeature).order_by(desc(ProjectFeature.reporting_date)).all()
-    latest_ids: dict = {}
-    for f in all_features:
-        if f.internal_project_id not in latest_ids:
-            latest_ids[f.internal_project_id] = f.internal_project_id
+    from sqlalchemy import func
+    
+    # Use DB to fetch ONLY the latest feature per project (avoids loading 100,000+ rows into RAM)
+    subq = db.query(
+        ProjectFeature.internal_project_id,
+        func.max(ProjectFeature.reporting_date).label('max_date')
+    ).group_by(ProjectFeature.internal_project_id).subquery()
+
+    latest_features_list = db.query(ProjectFeature.internal_project_id).join(
+        subq,
+        (ProjectFeature.internal_project_id == subq.c.internal_project_id) &
+        (ProjectFeature.reporting_date == subq.c.max_date)
+    ).all()
+    
+    latest_ids = {f.internal_project_id: f.internal_project_id for f in latest_features_list}
 
     reports = []
     for pid in list(latest_ids.keys())[:200]:   # sample first 200 for speed
