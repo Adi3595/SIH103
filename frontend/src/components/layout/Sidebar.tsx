@@ -26,17 +26,42 @@ export default function Sidebar() {
       onMouseLeave={() => setIsExpanded(false)}
       className="h-full shrink-0 flex flex-col relative z-20 glass-card mx-3 my-3 border border-white/60"
     >
-      <div className="relative px-3 py-4 flex items-center gap-3 border-b border-slate-100">
-        <img
-          src="/logo.png"
-          alt="Nirikshan Logo"
-          className="w-9 h-9 shrink-0 rounded-xl object-cover shadow-md"
-        />
+      {/* Logo area */}
+      <div className="relative px-3 py-3 flex items-center border-b border-slate-100 overflow-hidden">
+        {/* Icon-only cropped logo (always visible) */}
+        <div
+          className="shrink-0 rounded-xl overflow-hidden shadow-md border border-white/60"
+          style={{ width: 38, height: 38 }}
+        >
+          <img
+            src="/logo.png"
+            alt="Nirikshan"
+            style={{
+              width: 76,
+              height: 76,
+              objectFit: 'none',
+              objectPosition: 'center top',
+              marginTop: -4,
+            }}
+          />
+        </div>
+
+        {/* Brand text revealed on expand */}
         <AnimatePresence>
           {isExpanded && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col overflow-hidden">
-              <span className="text-xs font-black text-slate-800 tracking-widest uppercase whitespace-nowrap">Nirikshan</span>
-              <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase whitespace-nowrap">Monitor · Predict · Build</span>
+            <motion.div
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -8 }}
+              transition={{ duration: 0.18 }}
+              className="ml-3 flex flex-col overflow-hidden"
+            >
+              <span className="text-sm font-black text-slate-800 tracking-wide whitespace-nowrap">
+                Nirikshan
+              </span>
+              <span className="text-[9px] font-semibold text-teal-600 tracking-widest uppercase whitespace-nowrap">
+                Monitor · Predict · Build
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
