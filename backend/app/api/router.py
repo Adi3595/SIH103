@@ -319,6 +319,9 @@ async def upload_data_ingestion(files: list[UploadFile] = File(...)):
         df = item["df"]
         
         try:
+            # Strip BOM and whitespace from column names
+            df.columns = df.columns.str.strip().str.replace('\ufeff', '')
+
             # Prevent UNIQUE constraint failure for projects
             if table_name == "projects" and "internal_project_id" in df.columns:
                 with engine.connect() as conn:
@@ -332,7 +335,8 @@ async def upload_data_ingestion(files: list[UploadFile] = File(...)):
 
             from sqlalchemy import inspect
             inspector = inspect(engine)
-            db_columns = [col['name'] for col in inspector.get_columns(table_name)]
+            db_columns = inspector.get_columns(table_name)
+            db_col_names = [col['name'] for col in db_columns]
             
             if table_name == "project_snapshots" and "snapshot_id" not in df.columns:
                 import uuid
@@ -344,14 +348,19 @@ async def upload_data_ingestion(files: list[UploadFile] = File(...)):
                 import uuid
                 df["milestone_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
                 
-            cols_to_keep = [c for c in df.columns if c in db_columns]
+            cols_to_keep = [c for c in df.columns if c in db_col_names]
             df = df[cols_to_keep]
+
+            # Coerce Date columns to handle empty strings / NaNs gracefully
+            for col in db_columns:
+                if str(col['type']).upper() == 'DATE' and col['name'] in df.columns:
+                    df[col['name']] = pd.to_datetime(df[col['name']], errors='coerce').dt.date
 
             df.to_sql(table_name, engine, if_exists="append", index=False)
             results.append(f"{filename}: Ingested {len(df)} records into {table_name}")
             
         except Exception as e:
-            results.append(f"{filename}: Failed ({str(e)})")
+            results.append(f"{filename}: Failed to insert ({str(e)})")
 
     # Run ML feature pipeline asynchronously in threadpool since it uses pandas/sqlalchemy sync
     await run_in_threadpool(run_pipeline)
