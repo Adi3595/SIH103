@@ -269,55 +269,63 @@ def process_and_insert_data(parsed_files, engine_url):
     """Background task to insert DataFrames into DB and run ML pipeline."""
     from sqlalchemy import create_engine
     engine = create_engine(engine_url)
+    import os
+    import uuid
     
     for item in parsed_files:
         filename = item["filename"]
         table_name = item["table_name"]
-        df = item["df"]
+        tmp_path = item["tmp_path"]
         
         try:
-            # Strip BOM and whitespace from column names
-            df.columns = df.columns.str.strip().str.replace('\ufeff', '')
-
-            # Prevent UNIQUE constraint failure for projects
-            if table_name == "projects" and "internal_project_id" in df.columns:
-                with engine.connect() as conn:
-                    existing_ids = pd.read_sql("SELECT internal_project_id FROM projects", conn)
-                    existing_set = set(existing_ids["internal_project_id"])
-                df = df[~df["internal_project_id"].isin(existing_set)]
-                
-                if df.empty:
-                    print(f"{filename}: Skipped (All projects already exist)")
-                    continue
-
             from sqlalchemy import inspect
             inspector = inspect(engine)
             db_columns = inspector.get_columns(table_name)
             db_col_names = [col['name'] for col in db_columns]
             
-            if table_name == "project_snapshots" and "snapshot_id" not in df.columns:
-                import uuid
-                df["snapshot_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
-            elif table_name == "issues" and "issue_id" not in df.columns:
-                import uuid
-                df["issue_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
-            elif table_name == "milestones" and "milestone_id" not in df.columns:
-                import uuid
-                df["milestone_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+            # Process in chunks of 5000 to keep RAM strictly under 512MB
+            chunk_iter = pd.read_csv(tmp_path, chunksize=5000)
+            total_inserted = 0
+            
+            for df in chunk_iter:
+                # Strip BOM and whitespace from column names
+                df.columns = df.columns.str.strip().str.replace('\ufeff', '')
+
+                # Prevent UNIQUE constraint failure for projects
+                if table_name == "projects" and "internal_project_id" in df.columns:
+                    with engine.connect() as conn:
+                        existing_ids = pd.read_sql("SELECT internal_project_id FROM projects", conn)
+                        existing_set = set(existing_ids["internal_project_id"])
+                    df = df[~df["internal_project_id"].isin(existing_set)]
+                    
+                    if df.empty:
+                        continue
+
+                if table_name == "project_snapshots" and "snapshot_id" not in df.columns:
+                    df["snapshot_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+                elif table_name == "issues" and "issue_id" not in df.columns:
+                    df["issue_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+                elif table_name == "milestones" and "milestone_id" not in df.columns:
+                    df["milestone_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+                    
+                cols_to_keep = [c for c in df.columns if c in db_col_names]
+                df = df[cols_to_keep]
+
+                # Coerce Date columns to handle empty strings / NaNs gracefully
+                for col in db_columns:
+                    if str(col['type']).upper() == 'DATE' and col['name'] in df.columns:
+                        df[col['name']] = pd.to_datetime(df[col['name']], errors='coerce').dt.date
+
+                df.to_sql(table_name, engine, if_exists="append", index=False)
+                total_inserted += len(df)
                 
-            cols_to_keep = [c for c in df.columns if c in db_col_names]
-            df = df[cols_to_keep]
-
-            # Coerce Date columns to handle empty strings / NaNs gracefully
-            for col in db_columns:
-                if str(col['type']).upper() == 'DATE' and col['name'] in df.columns:
-                    df[col['name']] = pd.to_datetime(df[col['name']], errors='coerce').dt.date
-
-            df.to_sql(table_name, engine, if_exists="append", index=False)
-            print(f"{filename}: Ingested {len(df)} records into {table_name}")
+            print(f"{filename}: Ingested {total_inserted} records into {table_name}")
             
         except Exception as e:
             print(f"{filename}: Failed to insert ({str(e)})")
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
 
     # Once insertion is done, run ML pipeline
     run_pipeline()
@@ -325,11 +333,14 @@ def process_and_insert_data(parsed_files, engine_url):
 @router.post("/ingestion/upload")
 async def upload_data_ingestion(background_tasks: BackgroundTasks, files: list[UploadFile] = File(...)):
     """
-    Accepts CSV files, parses them in memory immediately, and pushes the heavy 
-    database insertion (to_sql) and ML features to the background to prevent proxy timeouts.
+    Accepts CSV files, saves them to disk temporarily, and schedules background 
+    database insertion using chunks to prevent OOM (Out-of-Memory) crashes on Render.
     """
     results = []
     parsed_files = []
+    import os
+    import uuid
+    import csv
     
     for file in files:
         if not file.filename.endswith('.csv'):
@@ -337,24 +348,37 @@ async def upload_data_ingestion(background_tasks: BackgroundTasks, files: list[U
             continue
             
         try:
-            df = pd.read_csv(file.file)
+            # Save file to disk to avoid memory limits
+            tmp_path = f"/tmp/{uuid.uuid4()}_{file.filename}"
+            # For local windows dev fallback if /tmp doesn't exist
+            if not os.path.exists("/tmp"):
+                tmp_path = f"{uuid.uuid4()}_{file.filename}"
+                
+            with open(tmp_path, "wb") as f:
+                f.write(await file.read())
             
-            # Determine table based on columns
+            # Read just the header to determine table schema without loading data
+            with open(tmp_path, 'r', encoding='utf-8-sig') as f:
+                reader = csv.reader(f)
+                header = next(reader)
+            
             table_name = None
-            if "physical_progress_pct" in df.columns:
+            if "physical_progress_pct" in header:
                 table_name = "project_snapshots"
-            elif "issue_status" in df.columns:
+            elif "issue_status" in header:
                 table_name = "issues"
-            elif "project_name" in df.columns:
+            elif "project_name" in header:
                 table_name = "projects"
-            elif "milestone_name" in df.columns:
+            elif "milestone_name" in header:
                 table_name = "milestones"
             else:
                 results.append(f"{file.filename}: Failed (Unknown schema)")
+                if os.path.exists(tmp_path):
+                    os.remove(tmp_path)
                 continue
                 
-            parsed_files.append({"filename": file.filename, "table_name": table_name, "df": df})
-            results.append(f"{file.filename}: Parsed {len(df)} rows")
+            parsed_files.append({"filename": file.filename, "table_name": table_name, "tmp_path": tmp_path})
+            results.append(f"{file.filename}: Uploaded successfully")
             
         except Exception as e:
             results.append(f"{file.filename}: Failed parsing ({str(e)})")
