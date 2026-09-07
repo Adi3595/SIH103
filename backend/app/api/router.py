@@ -265,56 +265,11 @@ from fastapi.concurrency import run_in_threadpool
 
 from fastapi import BackgroundTasks
 
-@router.post("/ingestion/upload")
-async def upload_data_ingestion(background_tasks: BackgroundTasks, files: list[UploadFile] = File(...)):
-    """
-    Accepts CSV files (e.g. projects.csv, project_snapshots.csv), appends them to the DB, 
-    and regenerates the ML features in the background.
-    """
-    engine = create_engine(DATABASE_URL)
-    results = []
-
-    # Parse and categorize files before inserting to enforce dependency order
-    parsed_files = []
+def process_and_insert_data(parsed_files, engine_url):
+    """Background task to insert DataFrames into DB and run ML pipeline."""
+    from sqlalchemy import create_engine
+    engine = create_engine(engine_url)
     
-    for file in files:
-        if not file.filename.endswith('.csv'):
-            results.append(f"{file.filename}: Skipped (Only CSV allowed)")
-            continue
-            
-        try:
-            df = pd.read_csv(file.file)
-            
-            # Determine table based on columns
-            table_name = None
-            if "physical_progress_pct" in df.columns:
-                table_name = "project_snapshots"
-            elif "issue_status" in df.columns:
-                table_name = "issues"
-            elif "project_name" in df.columns:
-                table_name = "projects"
-            elif "milestone_name" in df.columns:
-                table_name = "milestones"
-            else:
-                results.append(f"{file.filename}: Failed (Unknown schema)")
-                continue
-                
-            parsed_files.append({"filename": file.filename, "table_name": table_name, "df": df})
-            
-        except Exception as e:
-            results.append(f"{file.filename}: Failed parsing ({str(e)})")
-
-    # Define strict insertion order to satisfy foreign keys
-    order_map = {
-        "projects": 1,
-        "project_snapshots": 2,
-        "milestones": 3,
-        "issues": 4
-    }
-    
-    # Sort files by dependency order
-    parsed_files.sort(key=lambda x: order_map.get(x["table_name"], 99))
-
     for item in parsed_files:
         filename = item["filename"]
         table_name = item["table_name"]
@@ -332,7 +287,7 @@ async def upload_data_ingestion(background_tasks: BackgroundTasks, files: list[U
                 df = df[~df["internal_project_id"].isin(existing_set)]
                 
                 if df.empty:
-                    results.append(f"{filename}: Skipped (All projects already exist)")
+                    print(f"{filename}: Skipped (All projects already exist)")
                     continue
 
             from sqlalchemy import inspect
@@ -359,12 +314,64 @@ async def upload_data_ingestion(background_tasks: BackgroundTasks, files: list[U
                     df[col['name']] = pd.to_datetime(df[col['name']], errors='coerce').dt.date
 
             df.to_sql(table_name, engine, if_exists="append", index=False)
-            results.append(f"{filename}: Ingested {len(df)} records into {table_name}")
+            print(f"{filename}: Ingested {len(df)} records into {table_name}")
             
         except Exception as e:
-            results.append(f"{filename}: Failed to insert ({str(e)})")
+            print(f"{filename}: Failed to insert ({str(e)})")
 
-    # Run ML feature pipeline asynchronously in background so it doesn't timeout the proxy
-    background_tasks.add_task(run_pipeline)
+    # Once insertion is done, run ML pipeline
+    run_pipeline()
+
+@router.post("/ingestion/upload")
+async def upload_data_ingestion(background_tasks: BackgroundTasks, files: list[UploadFile] = File(...)):
+    """
+    Accepts CSV files, parses them in memory immediately, and pushes the heavy 
+    database insertion (to_sql) and ML features to the background to prevent proxy timeouts.
+    """
+    results = []
+    parsed_files = []
     
-    return {"status": "success", "message": " | ".join(results) + " | Feature extraction queued."}
+    for file in files:
+        if not file.filename.endswith('.csv'):
+            results.append(f"{file.filename}: Skipped (Only CSV allowed)")
+            continue
+            
+        try:
+            df = pd.read_csv(file.file)
+            
+            # Determine table based on columns
+            table_name = None
+            if "physical_progress_pct" in df.columns:
+                table_name = "project_snapshots"
+            elif "issue_status" in df.columns:
+                table_name = "issues"
+            elif "project_name" in df.columns:
+                table_name = "projects"
+            elif "milestone_name" in df.columns:
+                table_name = "milestones"
+            else:
+                results.append(f"{file.filename}: Failed (Unknown schema)")
+                continue
+                
+            parsed_files.append({"filename": file.filename, "table_name": table_name, "df": df})
+            results.append(f"{file.filename}: Parsed {len(df)} rows")
+            
+        except Exception as e:
+            results.append(f"{file.filename}: Failed parsing ({str(e)})")
+
+    # Define strict insertion order to satisfy foreign keys
+    order_map = {
+        "projects": 1,
+        "project_snapshots": 2,
+        "milestones": 3,
+        "issues": 4
+    }
+    
+    # Sort files by dependency order before queuing
+    parsed_files.sort(key=lambda x: order_map.get(x["table_name"], 99))
+
+    # Run heavy DB insertion and ML feature pipeline asynchronously in background 
+    if parsed_files:
+        background_tasks.add_task(process_and_insert_data, parsed_files, DATABASE_URL)
+    
+    return {"status": "success", "message": " | ".join(results) + " | Scheduled for background DB insertion."}
