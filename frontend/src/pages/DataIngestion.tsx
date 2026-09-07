@@ -38,7 +38,7 @@ export default function DataIngestion() {
     files.forEach(f => formData.append('files', f))
     
     try {
-      const res = await axios.post('`${API_BASE}/api/ingestion/upload', formData, {
+      const res = await axios.post(`${API_BASE}/api/ingestion/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

@@ -97,7 +97,7 @@ export default function Priorities() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    axios.get('`${API_BASE}/api/dashboard/summary')
+    axios.get(`${API_BASE}/api/dashboard/summary`)
       .then(res => {
         setPriorities(res.data.top_priorities || [])
         setLoading(false)

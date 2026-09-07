@@ -35,7 +35,7 @@ export default function Projects() {
   const itemsPerPage = 100
 
   useEffect(() => {
-    axios.get('`${API_BASE}/api/projects?limit=10000')
+    axios.get(`${API_BASE}/api/projects?limit=10000`)
       .then(res => { setProjects(res.data); setLoading(false) })
       .catch(() => { setLoading(false); setError(true) })
   }, [])

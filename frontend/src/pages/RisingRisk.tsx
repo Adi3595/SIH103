@@ -44,7 +44,7 @@ export default function RisingRisk() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    axios.get('`${API_BASE}/api/dashboard/summary')
+    axios.get(`${API_BASE}/api/dashboard/summary`)
       .then(res => {
         const sorted = [...res.data.top_priorities].sort((a, b) => b.risk_momentum - a.risk_momentum)
         setRising(sorted)

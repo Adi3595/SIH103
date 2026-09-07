@@ -9,7 +9,7 @@ const sections = [
     title: 'Backend Configuration',
     color: '#0f766e',
     items: [
-      { label: 'API Endpoint', value: '`${API_BASE}', type: 'text' },
+      { label: 'API Endpoint', value: `${API_BASE}`, type: 'text' },
       { label: 'Database', value: 'SQLite — sih26103.db', type: 'readonly' },
       { label: 'Risk Engine', value: 'v1.0 — Hybrid Rule+ML', type: 'readonly' },
     ]

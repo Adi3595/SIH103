@@ -31,7 +31,7 @@ export default function Analytics() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    axios.get('`${API_BASE}/api/dashboard/summary')
+    axios.get(`${API_BASE}/api/dashboard/summary`)
       .then(res => { setData(res.data); setLoading(false) })
       .catch(() => { setLoading(false); setError(true) })
   }, [])
