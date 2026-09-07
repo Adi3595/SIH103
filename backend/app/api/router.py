@@ -263,11 +263,13 @@ from app.core.database import DATABASE_URL
 from app.scripts.run_feature_pipeline import run_pipeline
 from fastapi.concurrency import run_in_threadpool
 
+from fastapi import BackgroundTasks
+
 @router.post("/ingestion/upload")
-async def upload_data_ingestion(files: list[UploadFile] = File(...)):
+async def upload_data_ingestion(background_tasks: BackgroundTasks, files: list[UploadFile] = File(...)):
     """
     Accepts CSV files (e.g. projects.csv, project_snapshots.csv), appends them to the DB, 
-    and regenerates the ML features once at the end.
+    and regenerates the ML features in the background.
     """
     engine = create_engine(DATABASE_URL)
     results = []
@@ -362,7 +364,7 @@ async def upload_data_ingestion(files: list[UploadFile] = File(...)):
         except Exception as e:
             results.append(f"{filename}: Failed to insert ({str(e)})")
 
-    # Run ML feature pipeline asynchronously in threadpool since it uses pandas/sqlalchemy sync
-    await run_in_threadpool(run_pipeline)
+    # Run ML feature pipeline asynchronously in background so it doesn't timeout the proxy
+    background_tasks.add_task(run_pipeline)
     
-    return {"status": "success", "message": " | ".join(results)}
+    return {"status": "success", "message": " | ".join(results) + " | Feature extraction queued."}
