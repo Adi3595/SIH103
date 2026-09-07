@@ -23,16 +23,13 @@ export default function Header() {
 
   return (
     <header className="h-16 flex items-center justify-between px-8 bg-surface-card/80 backdrop-blur-xl border-b border-border-default sticky top-0 z-20 transition-colors">
-      {/* Left: Nav Toggle */}
-      <div className="flex items-center flex-1">
+      {/* Left: Nav Toggle & Search */}
+      <div className="flex items-center gap-4 flex-1">
         <button className="flex items-center justify-center p-2 -ml-2 text-text-muted hover:text-brand-primary transition-colors rounded-lg">
           <Menu size={20} />
         </button>
-      </div>
-
-      {/* Center: Search Bar */}
-      <div className="flex-1 flex justify-center w-full max-w-2xl px-4">
-        <div className="relative w-full group">
+        
+        <div className="relative max-w-md w-full group">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-brand-primary transition-colors" />
           <input
             type="text"
