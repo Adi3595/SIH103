@@ -32,7 +32,7 @@
    ```
 
 4. **Environment Variables**
-   Copy `.env.example` to `.env` and add your **OpenRouter API Key** (required for the Layer 04C Prescriptive AI).
+   Copy `.env.example` to `.env` and add your **Gemini API Key** (required for the Layer 04C Prescriptive AI).
    ```bash
    cp .env.example .env
    ```

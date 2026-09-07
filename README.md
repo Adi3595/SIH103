@@ -58,8 +58,6 @@ PAIMANA is a **full-stack, AI-driven intelligence platform** that helps governme
 | **Priority Queue** | Projects grouped by urgency requiring intervention |
 | **Analytics** | Portfolio-level charts and risk distribution |
 | **🗺️ Geospatial Map** | Interactive India choropleth — hover for live state stats |
-| **AI Intelligence** | Status of AI/ML capabilities |
-| **Data Quality** | Dataset integrity monitor |
 
 ---
 
@@ -89,7 +87,7 @@ PAIMANA is a **full-stack, AI-driven intelligence platform** that helps governme
                         │  │     ML Risk Engine       │  │
                         │  │  engine · momentum       │  │
                         │  │  analogues · predictive  │  │
-                        │  │  prescriptive (OpenRouter│  │
+                        │  │  prescriptive (Gemini AI)│  │
                         │  └──────────┬──────────────┘  │
                         │             │                 │
                         │  ┌──────────▼──────────────┐  │
@@ -114,7 +112,7 @@ Converts raw project snapshot data into a **5-dimension health vector** scored 0
 | `financial_health` | Expenditure ratio, cost-progress divergence |
 | `schedule_health` | Time overrun %, delay momentum |
 | `milestone_health` | Milestone completion rate, delay rate |
-| `overall_risk_score` | Weighted composite (0–10 scale) |
+| `overall_risk_score` | Weighted composite (0–100 scale) |
 
 ---
 
@@ -153,9 +151,9 @@ All models use `class_weight='balanced'` to handle label skew.
 ---
 
 ### Layer 04C — Prescriptive AI `prescriptive.py`
-> LLM-generated actionable recommendations via OpenRouter
+> LLM-generated actionable recommendations via Google Gemini API
 
-Uses **Mistral-7B-Instruct** (with Claude fallback) to generate structured interventions:
+Uses **Gemini Flash (2.5/3.0/3.5)** with an automated fallback loop to generate structured interventions:
 - Root cause analysis
 - 3-5 specific action items
 - Escalation recommendation
@@ -231,7 +229,7 @@ pip install fastapi uvicorn sqlalchemy alembic scikit-learn pandas numpy request
 
 # Configure environment
 cp .env.example .env
-# Edit .env — add your OPENROUTER_API_KEY
+# Edit .env — add your GEMINI_API_KEY
 ```
 
 ### 2. Initialize Database
@@ -308,7 +306,7 @@ PAIMANA uses a **Milky Matte** aesthetic:
 
 ```env
 # backend/.env
-OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # Optional — defaults shown
 DATABASE_URL=sqlite:///./sih26103.db

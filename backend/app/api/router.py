@@ -264,65 +264,71 @@ from app.scripts.run_feature_pipeline import run_pipeline
 from fastapi.concurrency import run_in_threadpool
 
 @router.post("/ingestion/upload")
-async def upload_data_ingestion(file: UploadFile = File(...)):
+async def upload_data_ingestion(files: list[UploadFile] = File(...)):
     """
-    Accepts a CSV file (e.g. D02_project_snapshots.csv), appends it to the DB, 
-    and regenerates the ML features.
+    Accepts CSV files (e.g. projects.csv, project_snapshots.csv), appends them to the DB, 
+    and regenerates the ML features once at the end.
     """
-    if not file.filename.endswith('.csv'):
-        raise HTTPException(status_code=400, detail="Only CSV files are allowed")
-        
-    try:
-        df = pd.read_csv(file.file)
-        
-        # Determine table based on columns
-        table_name = None
-        if "physical_progress_pct" in df.columns:
-            table_name = "project_snapshots"
-        elif "issue_status" in df.columns:
-            table_name = "issues"
-        elif "project_name" in df.columns:
-            table_name = "projects"
-        elif "milestone_name" in df.columns:
-            table_name = "milestones"
-        else:
-            raise HTTPException(status_code=400, detail=f"Unknown CSV schema. Please upload Projects, Snapshots, Issues, or Milestones. Found columns: {list(df.columns)}")
-            
-        engine = create_engine(DATABASE_URL)
-        
-        # Prevent UNIQUE constraint failure for projects
-        if table_name == "projects" and "internal_project_id" in df.columns:
-            with engine.connect() as conn:
-                existing_ids = pd.read_sql("SELECT internal_project_id FROM projects", conn)
-                existing_set = set(existing_ids["internal_project_id"])
-            df = df[~df["internal_project_id"].isin(existing_set)]
-            
-            if df.empty:
-                return {"status": "success", "message": "All projects in this file already exist in the database. No new records were added."}
+    engine = create_engine(DATABASE_URL)
+    results = []
 
-        from sqlalchemy import inspect
-        inspector = inspect(engine)
-        db_columns = [col['name'] for col in inspector.get_columns(table_name)]
-        
-        if table_name == "project_snapshots" and "snapshot_id" not in df.columns:
-            import uuid
-            df["snapshot_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
-        elif table_name == "issues" and "issue_id" not in df.columns:
-            import uuid
-            df["issue_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
-        elif table_name == "milestones" and "milestone_id" not in df.columns:
-            import uuid
-            df["milestone_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+    for file in files:
+        if not file.filename.endswith('.csv'):
+            results.append(f"{file.filename}: Skipped (Only CSV allowed)")
+            continue
             
-        cols_to_keep = [c for c in df.columns if c in db_columns]
-        df = df[cols_to_keep]
+        try:
+            df = pd.read_csv(file.file)
+            
+            # Determine table based on columns
+            table_name = None
+            if "physical_progress_pct" in df.columns:
+                table_name = "project_snapshots"
+            elif "issue_status" in df.columns:
+                table_name = "issues"
+            elif "project_name" in df.columns:
+                table_name = "projects"
+            elif "milestone_name" in df.columns:
+                table_name = "milestones"
+            else:
+                results.append(f"{file.filename}: Failed (Unknown schema)")
+                continue
+                
+            # Prevent UNIQUE constraint failure for projects
+            if table_name == "projects" and "internal_project_id" in df.columns:
+                with engine.connect() as conn:
+                    existing_ids = pd.read_sql("SELECT internal_project_id FROM projects", conn)
+                    existing_set = set(existing_ids["internal_project_id"])
+                df = df[~df["internal_project_id"].isin(existing_set)]
+                
+                if df.empty:
+                    results.append(f"{file.filename}: Skipped (All projects already exist)")
+                    continue
 
-        df.to_sql(table_name, engine, if_exists="append", index=False)
-        
-        # Run ML feature pipeline asynchronously in threadpool since it uses pandas/sqlalchemy sync
-        await run_in_threadpool(run_pipeline)
-        
-        return {"status": "success", "message": f"Successfully ingested {len(df)} records into {table_name} and regenerated ML features."}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+            from sqlalchemy import inspect
+            inspector = inspect(engine)
+            db_columns = [col['name'] for col in inspector.get_columns(table_name)]
+            
+            if table_name == "project_snapshots" and "snapshot_id" not in df.columns:
+                import uuid
+                df["snapshot_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+            elif table_name == "issues" and "issue_id" not in df.columns:
+                import uuid
+                df["issue_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+            elif table_name == "milestones" and "milestone_id" not in df.columns:
+                import uuid
+                df["milestone_id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+                
+            cols_to_keep = [c for c in df.columns if c in db_columns]
+            df = df[cols_to_keep]
+
+            df.to_sql(table_name, engine, if_exists="append", index=False)
+            results.append(f"{file.filename}: Ingested {len(df)} records into {table_name}")
+            
+        except Exception as e:
+            results.append(f"{file.filename}: Failed ({str(e)})")
+
+    # Run ML feature pipeline asynchronously in threadpool since it uses pandas/sqlalchemy sync
+    await run_in_threadpool(run_pipeline)
+    
+    return {"status": "success", "message": " | ".join(results)}

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps'
 import { scaleLinear } from 'd3-scale'
 import { Tooltip } from 'react-tooltip'
+import 'react-tooltip/dist/react-tooltip.css'
 import { Map, Activity, TrendingUp, FolderKanban, AlertOctagon } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
 
@@ -58,7 +59,7 @@ export default function MapView() {
   const [sector, setSector] = useState('ALL')
   const [metric, setMetric] = useState<'project_count' | 'avg_risk_score' | 'critical_projects'>('project_count')
   const [hovered, setHovered] = useState<StateStats | null>(null)
-  const [tooltipContent, setTooltipContent] = useState('')
+  const [tooltipData, setTooltipData] = useState<{ name: string, data?: StateStats } | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -149,7 +150,9 @@ export default function MapView() {
                     const dbName = GEO_TO_DB[geoName] || geoName
                     const stateData = data.find(d => d.state === dbName)
                     const val = stateData ? stateData[metric] : 0
-                    const fill = stateData && val > 0 ? colorScale(val) : '#f1f5f9'
+                    const isHovered = hovered?.state === dbName
+                    const baseFill = stateData && val > 0 ? colorScale(val) : '#f1f5f9'
+                    const fill = isHovered ? '#0f766e' : baseFill
 
                     return (
                       <Geography
@@ -164,24 +167,14 @@ export default function MapView() {
                           pressed: { outline: 'none' },
                         }}
                         data-tooltip-id="india-map-tip"
-                        data-tooltip-html={tooltipContent}
                         onMouseEnter={() => {
                           setHovered(stateData || null)
-                          if (stateData) {
-                            setTooltipContent(
-                              `<div style="font-weight:800;font-size:14px;margin-bottom:4px">${stateData.state}</div>
-                               <div style="font-size:12px">🗂 Projects: <b>${stateData.project_count}</b></div>
-                               <div style="font-size:12px">💰 Total Cost: <b>₹${stateData.total_cost_cr.toLocaleString('en-IN')} Cr</b></div>
-                               <div style="font-size:12px">⚡ Avg Risk: <b>${stateData.avg_risk_score}/10</b></div>
-                               <div style="font-size:12px;color:#fca5a5">🔴 Critical: <b>${stateData.critical_projects}</b></div>`
-                            )
-                          } else {
-                            setTooltipContent(
-                              `<div style="font-weight:800;font-size:14px">${geoName}</div><div style="font-size:12px;opacity:0.6">No projects mapped</div>`
-                            )
-                          }
+                          setTooltipData({ name: dbName, data: stateData })
                         }}
-                        onMouseLeave={() => { setHovered(null); setTooltipContent('') }}
+                        onMouseLeave={() => { 
+                          setHovered(null)
+                          setTooltipData(null)
+                        }}
                       />
                     )
                   })
@@ -192,9 +185,16 @@ export default function MapView() {
 
           <Tooltip
             id="india-map-tip"
-            className="!bg-slate-800 !text-white !rounded-2xl !shadow-2xl !border !border-slate-700"
-            style={{ padding: '12px 16px', pointerEvents: 'none', zIndex: 100 }}
-          />
+            className="!bg-slate-800 !text-white !rounded-lg !shadow-xl !border !border-slate-700"
+            style={{ padding: '6px 12px', pointerEvents: 'none', zIndex: 100 }}
+            float={true}
+          >
+            {tooltipData && (
+              <div className="font-bold text-sm tracking-wide">
+                {tooltipData.data ? tooltipData.data.state : tooltipData.name}
+              </div>
+            )}
+          </Tooltip>
 
           {/* Legend */}
           <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl border border-slate-200 shadow-md">
@@ -297,7 +297,12 @@ export default function MapView() {
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Top States</div>
             <div className="space-y-2">
               {[...data].sort((a, b) => b[metric] - a[metric]).slice(0, 5).map((s, i) => (
-                <div key={s.state} className="flex items-center gap-2">
+                <div 
+                  key={s.state} 
+                  className="flex items-center gap-2 p-2 rounded-lg transition-colors hover:bg-slate-50 cursor-pointer"
+                  onMouseEnter={() => setHovered(s)}
+                  onMouseLeave={() => setHovered(null)}
+                >
                   <span className="text-xs font-black text-slate-300 w-4">{i + 1}</span>
                   <div className="flex-1">
                     <div className="flex justify-between text-xs font-semibold text-slate-600 mb-0.5">

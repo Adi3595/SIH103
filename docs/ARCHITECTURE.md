@@ -53,7 +53,8 @@ The server is responsible for routing, database interaction, and serving as the 
 - **ORM & Database:** SQLAlchemy (Core + ORM) mapping to a local SQLite database (`sih26103.db`). SQLite was chosen for portability in the hackathon prototype, but SQLAlchemy allows zero-code migration to PostgreSQL.
 - **Machine Learning:** `scikit-learn` for Random Forest Classifiers and K-Nearest Neighbors. Models are serialized via `joblib`/`pickle`.
 - **Data Processing:** `pandas` and `numpy` used extensively in the feature engineering pipeline (`pipeline.py`) to calculate rolling windows, deltas, and variances.
-- **Generative AI:** `requests` module interfacing with OpenRouter (Mistral-7B / Claude) for the Layer 04C Prescriptive engine.
+- **Generative AI:** Google's `google-generativeai` SDK interfacing directly with the Native Gemini API (Gemini Flash) for the Layer 04C Prescriptive engine, replacing the legacy OpenRouter implementation.
+- **Performance:** SQLAlchemy `joinedload` is explicitly utilized to eagerly load relational data, resolving critical N+1 query latency issues on heavy endpoints like the Geospatial map.
 
 ---
 

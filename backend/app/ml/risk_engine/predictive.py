@@ -42,8 +42,8 @@ class PredictiveEngine:
             return {"error": "No feature data found"}
             
         # Extract features for each model exactly as they were trained
-        features_cost = ['expenditure_ratio', 'monthly_expenditure_rate', 'expenditure_growth', 'financial_physical_divergence', 'issue_pressure']
-        features_schedule = ['progress_velocity', 'progress_acceleration', 'days_remaining', 'time_overrun_days', 'delay_momentum', 'schedule_progress_gap']
+        features_cost = ['expenditure_ratio', 'monthly_expenditure_rate', 'expenditure_growth', 'issue_pressure']
+        features_schedule = ['progress_velocity', 'progress_acceleration', 'days_remaining', 'delay_momentum', 'schedule_progress_gap']
         features_milestone = ['schedule_progress_gap', 'delay_momentum', 'issue_pressure', 'milestone_delay_rate', 'progress_velocity']
         features_escalation = ['progress_acceleration', 'expenditure_growth', 'delay_momentum', 'risk_score', 'issue_pressure']
         

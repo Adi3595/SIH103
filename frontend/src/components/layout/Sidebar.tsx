@@ -7,12 +7,10 @@ import { cn } from "../../utils/cn"
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard",       to: "/",             end: true,  accent: "#2dd4bf" },
   { icon: FolderKanban,   label: "Projects",         to: "/projects",     end: false, accent: "#2dd4bf" },
-  { icon: BrainCircuit,   label: "Risk Intelligence", to: "/intelligence", end: false, accent: "#fbbf24" },
   { icon: TrendingUp,     label: "Rising Risk",       to: "/rising",       end: false, accent: "#fb7185" },
   { icon: AlertOctagon,   label: "Priorities",        to: "/priorities",   end: false, accent: "#fb923c" },
   { icon: BarChart3,      label: "Analytics",         to: "/analytics",    end: false, accent: "#2dd4bf" },
   { icon: Map,            label: "Geospatial View",   to: "/map",          end: false, accent: "#0d9488" },
-  { icon: Database,       label: "Data Quality",      to: "/data",         end: false, accent: "#94a3b8" },
   { icon: Upload,         label: "Data Ingestion",    to: "/ingestion",    end: false, accent: "#0d9488" },
   { icon: Settings,       label: "Settings",          to: "/settings",     end: false, accent: "#94a3b8" },
 ]

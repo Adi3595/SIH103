@@ -41,14 +41,14 @@ Each dimension is bounded using a modified sigmoid or linear clamping function.
   $$H_m = \text{milestone\_completion\_ratio} \times 100$$
 
 ### Composite Risk Score
-The final risk score (0-10 scale) is an inverted weighted average:
-$$\text{Score} = 10 - \left(0.4 H_s + 0.3 H_f + 0.2 H_p + 0.1 H_m\right) \times 0.1$$
+The final risk score (0-100 scale) is an inverted weighted average:
+$$\text{Score} = 100 - \left(0.4 H_s + 0.3 H_f + 0.2 H_p + 0.1 H_m\right)$$
 
 Risk Levels are bucketed strictly:
-- **LOW:** $< 4.0$
-- **MEDIUM:** $4.0 - 6.5$
-- **HIGH:** $6.5 - 8.5$
-- **CRITICAL:** $\ge 8.5$
+- **LOW:** $< 40$
+- **MEDIUM:** $40 - 65$
+- **HIGH:** $65 - 85$
+- **CRITICAL:** $\ge 85$
 
 ---
 
@@ -80,42 +80,40 @@ Risk is dynamic. A project sitting at a score of 6.0 is stable if it was 6.0 las
 
 ---
 
-## 🔮 Layer 04A: Predictive Classifiers (XGBoost, LightGBM, Random Forest)
+## 🔮 Layer 04A: Predictive Classifiers (Random Forest)
 **File:** `app/ml/risk_engine/predictive.py`
 
-This layer forecasts future states. To ensure maximum accuracy, we use a heterogeneous ensemble of tree-based algorithms, selecting the best model architecture for each specific failure mode based on offline evaluation.
+This layer forecasts future states. To ensure maximum accuracy and explainability (via SHAP feature importances), we use **Random Forest** algorithms for all four predictive models.
 
-### 1. Cost Overrun Model: XGBoost
-- **Why XGBoost:** Cost overrun data often contains extreme outliers (e.g., land acquisition costs ballooning 300%). XGBoost's gradient boosting framework and L1/L2 regularization (`reg_alpha`, `reg_lambda`) handle these skewed residuals better than standard bagging.
-- **Target:** Will `cost_progress_divergence` exceed 10%?
-- **Key Features:** `financial_physical_divergence`, `monthly_expenditure_rate`.
+> **Data Leakage Fix & Statistical Baseline:** During training, highly deterministic "leaky" features (such as `financial_physical_divergence` for cost overruns) were deliberately dropped to ensure the models are genuinely predicting risk rather than simply reporting algebraic thresholds. Additionally, a **Logistic Regression baseline** was evaluated; Random Forest consistently outperformed the statistical baseline (e.g., F1 0.77 vs 0.74 on Milestone Failure), justifying the use of non-linear ML.
 
-### 2. Schedule Delay Model: LightGBM
-- **Why LightGBM:** Schedule data relies heavily on discrete milestones and large categorical sectors. LightGBM handles these efficiently through its histogram-based splitting and exclusive feature bundling (EFB), providing faster training and high precision on sparse delay data.
+### 1. Cost Overrun Model
+- **Target:** Will the project exceed its revised budget threshold?
+- **Key Features:** `expenditure_ratio`, `monthly_expenditure_rate`, `expenditure_growth`, `issue_pressure`.
+
+### 2. Schedule Delay Model
 - **Target:** Will `time_overrun_pct` exceed 15%?
-- **Key Features:** `progress_velocity`, `days_remaining`.
+- **Key Features:** `progress_velocity`, `progress_acceleration`, `days_remaining`, `delay_momentum`, `schedule_progress_gap`.
 
-### 3. Milestone Failure Model: Random Forest
-- **Why Random Forest:** Milestone failure prediction requires high stability and robustness against noise (e.g., a milestone missed by 1 day vs 100 days). RF's bagging (bootstrap aggregating) prevents overfitting on noisy milestone reporting data.
+### 3. Milestone Failure Model
 - **Target:** Will `milestone_completion_ratio` drop below 0.5 with active delays?
-- **Key Features:** `delay_momentum`, `milestone_delay_rate`.
+- **Key Features:** `delay_momentum`, `milestone_delay_rate`, `issue_pressure`, `schedule_progress_gap`.
 
-### 4. Escalation Risk Model: XGBoost
-- **Why XGBoost:** Predicting momentum escalation is highly non-linear. XGBoost's deep boosting rounds can capture complex interactions between `issue_pressure` and temporal `progress_acceleration`.
-- **Target:** Will `risk_momentum` exceed 5 in the next quarter?
-- **Key Features:** `issue_pressure` (highest importance), `risk_score`.
+### 4. Escalation Risk Model
+- **Target:** Will `risk_momentum` escalate to CRITICAL in the next quarter?
+- **Key Features:** `issue_pressure` (highest importance), `risk_score`, `progress_acceleration`.
 
-> **Tech Stack:** Models are trained offline via `train_models.py`, saved as optimized binaries, and loaded dynamically by the FastAPI `PredictiveEngine` singleton.
+> **Tech Stack:** Models are trained offline via `retrain_models.py`, saved as optimized `.pkl` binaries in `app/ml/models/`, and loaded dynamically by the FastAPI `PredictiveEngine` singleton.
 
 ---
 
-## 🧠 Layer 04C: Prescriptive AI (LLM / OpenRouter)
+## 🧠 Layer 04C: Prescriptive AI (LLM / Google Gemini)
 **File:** `app/ml/risk_engine/prescriptive.py`
 
 Layer 04C translates the numerical risk data into actionable, plain-English policy recommendations.
 
 ### Implementation Details
-- **Provider:** OpenRouter API (allows seamless switching between Mistral, Llama, and Claude).
+- **Provider:** Google Gemini Native API (Gemini Flash).
 - **Prompt Engineering:** The backend constructs an extensive JSON prompt containing:
   - The project's basic meta-data.
   - The Layer 01 Digital Fingerprint (Health scores).

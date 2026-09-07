@@ -6,7 +6,7 @@ import axios from 'axios'
 
 export default function DataIngestion() {
   const [dragActive, setDragActive] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
@@ -24,17 +24,17 @@ export default function DataIngestion() {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0])
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFiles(Array.from(e.dataTransfer.files))
     }
   }
 
   const uploadFile = async () => {
-    if (!file) return
+    if (files.length === 0) return
     setStatus('uploading')
     
     const formData = new FormData()
-    formData.append('file', file)
+    files.forEach(f => formData.append('files', f))
     
     try {
       const res = await axios.post('http://127.0.0.1:8000/api/ingestion/upload', formData, {
@@ -82,8 +82,8 @@ export default function DataIngestion() {
                 </div>
                 <h3 className="text-lg font-bold text-slate-800">Pipeline Execution Complete</h3>
                 <p className="text-sm text-slate-500 mt-1 max-w-md text-center">{message}</p>
-                <button onClick={() => { setStatus('idle'); setFile(null); setMessage('') }} className="mt-6 px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">
-                  Upload Another File
+                <button onClick={() => { setStatus('idle'); setFiles([]); setMessage('') }} className="mt-6 px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">
+                  Upload More Files
                 </button>
               </motion.div>
             ) : status === 'error' ? (
@@ -93,7 +93,7 @@ export default function DataIngestion() {
                 </div>
                 <h3 className="text-lg font-bold text-slate-800">Ingestion Failed</h3>
                 <p className="text-sm text-red-500 mt-1 max-w-md text-center font-medium">{message}</p>
-                <button onClick={() => { setStatus('idle'); setFile(null); setMessage('') }} className="mt-6 px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">
+                <button onClick={() => { setStatus('idle'); setFiles([]); setMessage('') }} className="mt-6 px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">
                   Try Again
                 </button>
               </motion.div>
@@ -109,30 +109,40 @@ export default function DataIngestion() {
                   <Upload size={32} />
                 </div>
                 <h3 className="text-lg font-bold text-slate-700 mb-2">Drag & Drop CSV Files Here</h3>
-                <p className="text-sm text-slate-400 mb-6 text-center max-w-md">
-                  Files must match the standard OCMS/PAIMANA snapshot schema.
+                <p className="text-sm text-slate-500 mb-3 text-center max-w-md">
+                  Please upload the required PAIMANA dataset files:
                 </p>
+                <div className="flex flex-wrap justify-center gap-2 mb-6 max-w-md">
+                  <span className="px-2.5 py-1 bg-slate-100 rounded-md text-xs font-mono font-bold text-slate-600 border border-slate-200">projects.csv</span>
+                  <span className="px-2.5 py-1 bg-slate-100 rounded-md text-xs font-mono font-bold text-slate-600 border border-slate-200">project_snapshots.csv</span>
+                  <span className="px-2.5 py-1 bg-slate-100 rounded-md text-xs font-mono font-bold text-slate-600 border border-slate-200">issues.csv</span>
+                </div>
                 <label className="cursor-pointer">
                   <input 
                     type="file" 
                     accept=".csv" 
+                    multiple
                     className="hidden" 
-                    onChange={e => e.target.files && setFile(e.target.files[0])} 
+                    onChange={e => e.target.files && setFiles(Array.from(e.target.files))} 
                   />
                   <div className="bg-teal-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-teal-200 hover:bg-teal-700 transition-colors">
                     Browse Files
                   </div>
                 </label>
                 
-                {file && (
-                  <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mt-6 flex items-center gap-3 bg-white px-4 py-3 rounded-lg border border-slate-200 shadow-sm w-full max-w-md">
-                    <FileText className="text-slate-400" size={20} />
-                    <div className="flex-1 truncate">
-                      <p className="text-sm font-bold text-slate-700 truncate">{file.name}</p>
-                      <p className="text-xs text-slate-400">{(file.size / 1024).toFixed(1)} KB</p>
-                    </div>
-                    <button onClick={uploadFile} className="bg-teal-50 text-teal-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-teal-200 hover:bg-teal-100 transition-colors">
-                      Process
+                {files.length > 0 && (
+                  <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mt-6 flex flex-col gap-3 w-full max-w-md">
+                    {files.map((f, i) => (
+                      <div key={i} className="flex items-center gap-3 bg-white px-4 py-3 rounded-lg border border-slate-200 shadow-sm w-full">
+                        <FileText className="text-slate-400" size={20} />
+                        <div className="flex-1 truncate">
+                          <p className="text-sm font-bold text-slate-700 truncate">{f.name}</p>
+                          <p className="text-xs text-slate-400">{(f.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                      </div>
+                    ))}
+                    <button onClick={uploadFile} className="mt-2 w-full bg-teal-50 text-teal-700 px-3 py-2.5 rounded-lg text-sm font-bold border border-teal-200 hover:bg-teal-100 transition-colors">
+                      Process All Files
                     </button>
                   </motion.div>
                 )}

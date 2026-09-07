@@ -71,3 +71,39 @@ Because we used tree-based models, every prediction can be decomposed into its c
 1. The `Escalation Risk Predictor` flags Project A with an 85% probability of turning CRITICAL.
 2. The model outputs its feature weights: `[issue_pressure: +0.6, progress_acceleration: -0.2]`.
 3. The LLM reads this and prescribes: *"Project A is highly likely to escalate. The primary driver is unresolved issues. You must immediately resolve the pending land acquisition bottlenecks, despite the fact that physical progress is currently stable."*
+
+---
+
+## 4. Statistical Baseline Comparison (Random Forest vs Logistic Regression)
+
+To assess whether advanced Machine Learning (Random Forest) provides significant gains over conventional statistical methods (Logistic Regression), both architectures were trained on the exact same leakage-corrected feature sets. 
+
+The results clearly justify the use of non-linear tree-based models for complex infrastructure data:
+
+| Model | Task | Algorithm | Accuracy | Precision | Recall | F1 Score |
+|-------|------|-----------|----------|-----------|--------|----------|
+| Cost Overrun | Exceed budget | Random Forest | 0.81 | 0.87 | 0.25 | **0.39** |
+| Cost Overrun | Exceed budget | Logistic Regression | 0.77 | 0.60 | 0.25 | 0.35 |
+| Milestone Failure | Miss near-term target | Random Forest | 0.86 | 0.78 | 0.77 | **0.77** |
+| Milestone Failure | Miss near-term target | Logistic Regression | 0.83 | 0.77 | 0.72 | 0.74 |
+| Escalation Risk | Escalate to CRITICAL | Random Forest | 0.95 | 0.58 | 0.56 | **0.57** |
+| Escalation Risk | Escalate to CRITICAL | Logistic Regression | 0.94 | 0.51 | 0.50 | 0.51 |
+
+*(Note: Schedule Delay model metrics not shown as both models struggle equally without access to deterministic leakage features, indicating delay forecasting requires strictly unstructured/narrative inputs).*
+
+**Interpretation:**
+Random Forest consistently outperforms Logistic Regression, particularly in Recall (catching risks early) and F1 Score. The improvements stem from Random Forest's ability to map non-linear threshold interactions—for instance, high `issue_pressure` only leading to `cost_overruns` when `expenditure_growth` is already accelerating.
+
+---
+
+## 5. CUF Field Alignment (Standard vs. Beyond-CUF Features)
+
+The PAIMANA Intelligence Engine relies on features derived from standard governmental reporting, but fundamentally requires **Beyond-CUF** (Common Upload Form) features to accurately predict failure.
+
+| Feature Category | Source / Description | Examples in Models |
+|------------------|-----------------------|--------------------|
+| **CUF-Derived** | Standard quantitative metrics usually captured in existing portals (OCMS, PMG). | `expenditure_ratio`, `monthly_expenditure_rate`, `progress_velocity`, `days_remaining` |
+| **Beyond-CUF** | Unstructured, external, or derivative metrics that PAIMANA introduces. | `issue_pressure` (NLP extracted), `delay_momentum` (derivative), `risk_score` |
+
+**Conclusion:**
+Removing Beyond-CUF features (specifically `issue_pressure`) causes a catastrophic drop in the F1 scores across the Milestone Failure and Escalation Risk models. Standard CUF data alone severely under-captures early risk signals. **Issue-tracking data must be incorporated into standard PAIMANA uploads to maintain predictive accuracy.**

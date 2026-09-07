@@ -35,7 +35,7 @@ This document describes exactly how a user navigates the PAIMANA platform and ma
 - **What it has & Features Implemented:**
   - **Digital Fingerprint (Layer 01):** Visualized as a 4-bar health metric panel showing exactly which dimension (Cost, Schedule, Progress, Milestone) is failing.
   - **Risk Momentum (Layer 03):** A dedicated panel showing if the risk is ACCELERATING or STABLE, identifying the fastest deteriorating metric.
-  - **Predictive Analysis (Layer 04A):** A grid showing % probabilities for Cost Overrun, Schedule Delay, Milestone Failure, and Escalation (driven by XGBoost/LightGBM/RF).
+  - **Predictive Analysis (Layer 04A):** A grid showing % probabilities for Cost Overrun, Schedule Delay, Milestone Failure, and Escalation (driven by Random Forest).
   - **Prescriptive Analysis (Layer 04C):** The "AI Advisor" panel at the top, generating English recommendations on how to fix the project.
   - **Comparative Analysis (Layer 02):** The "Historical Analogues" panel. Shows the 3 most mathematically similar past projects and their final outcomes (Cost/Time overruns).
   - **Basic Project Data:** Cost (Revised vs Original), End Date, Sector, State, Ministry.
@@ -52,7 +52,4 @@ This document describes exactly how a user navigates the PAIMANA platform and ma
   - **Sector Risk Comparison:** Which sectors (e.g., Roads vs Power) have the highest average risk.
   - **Budget vs Risk Mapping:** Scatter plots or bar charts comparing capital deployed vs risk generated.
 
-### 6. Data Quality (`/data`)
-- **What it has:** System integrity metrics.
-- **Features Implemented Here:**
-  - **Ingestion Tracking:** Monitors the synthetic dataset generation, missing fields, and reporting gaps, ensuring the ML pipeline has clean data.
+

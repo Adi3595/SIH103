@@ -1,130 +1,58 @@
-[
-    {
-        "name": "cost_overrun_model",
-        "metrics": {
-            "accuracy": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "f1": 1.0
-        },
-        "feature_importance": [
-            [
-                "financial_physical_divergence",
-                0.875503037804508
-            ],
-            [
-                "expenditure_ratio",
-                0.08719567781877373
-            ],
-            [
-                "monthly_expenditure_rate",
-                0.032185211304539926
-            ],
-            [
-                "expenditure_growth",
-                0.004068751414829709
-            ],
-            [
-                "issue_pressure",
-                0.0010473216573486685
-            ]
-        ]
+{
+  "cost_overrun_model": {
+    "rf": {
+      "accuracy": 0.7044347826086956,
+      "precision": 0.6588093079480205,
+      "recall": 0.27774238756529496,
+      "f1": 0.39075103065065425
     },
-    {
-        "name": "schedule_delay_model",
-        "metrics": {
-            "accuracy": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "f1": 1.0
-        },
-        "feature_importance": [
-            [
-                "time_overrun_days",
-                0.9193252439222597
-            ],
-            [
-                "delay_momentum",
-                0.04758283369446463
-            ],
-            [
-                "progress_velocity",
-                0.011562039433948791
-            ],
-            [
-                "schedule_progress_gap",
-                0.008971334878527632
-            ],
-            [
-                "days_remaining",
-                0.006418606372262331
-            ],
-            [
-                "progress_acceleration",
-                0.006139941698536965
-            ]
-        ]
-    },
-    {
-        "name": "milestone_failure_model",
-        "metrics": {
-            "accuracy": 0.8613888888888889,
-            "precision": 0.3997233748271093,
-            "recall": 0.8163841807909604,
-            "f1": 0.5366759517177344
-        },
-        "feature_importance": [
-            [
-                "milestone_delay_rate",
-                0.5305667990929314
-            ],
-            [
-                "delay_momentum",
-                0.1852575323712807
-            ],
-            [
-                "progress_velocity",
-                0.13156290612741184
-            ],
-            [
-                "schedule_progress_gap",
-                0.12541443759911397
-            ],
-            [
-                "issue_pressure",
-                0.027198324809262042
-            ]
-        ]
-    },
-    {
-        "name": "escalation_risk_model",
-        "metrics": {
-            "accuracy": 0.9483333333333334,
-            "precision": 0.5,
-            "recall": 0.8655913978494624,
-            "f1": 0.6338582677165354
-        },
-        "feature_importance": [
-            [
-                "issue_pressure",
-                0.7128712080083918
-            ],
-            [
-                "risk_score",
-                0.1647754548958408
-            ],
-            [
-                "progress_acceleration",
-                0.04871468107998047
-            ],
-            [
-                "delay_momentum",
-                0.04787572127795621
-            ],
-            [
-                "expenditure_growth",
-                0.02576293473783075
-            ]
-        ]
+    "lr": {
+      "accuracy": 0.6966086956521739,
+      "precision": 0.6488888888888888,
+      "recall": 0.2418142438527201,
+      "f1": 0.35232968256914793
     }
-]
+  },
+  "schedule_delay_model": {
+    "rf": {
+      "accuracy": 0.9021666666666667,
+      "precision": 0.46153846153846156,
+      "recall": 0.0025564550489987218,
+      "f1": 0.005084745762711864
+    },
+    "lr": {
+      "accuracy": 0.9022083333333333,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    }
+  },
+  "milestone_failure_model": {
+    "rf": {
+      "accuracy": 0.7624583333333333,
+      "precision": 0.7643553629469122,
+      "recall": 0.7880794701986755,
+      "f1": 0.7760361422117462
+    },
+    "lr": {
+      "accuracy": 0.7244166666666667,
+      "precision": 0.7239839551956406,
+      "recall": 0.7632649804516077,
+      "f1": 0.7431057251611901
+    }
+  },
+  "escalation_risk_model": {
+    "rf": {
+      "accuracy": 0.9737826086956521,
+      "precision": 0.717391304347826,
+      "recall": 0.4697508896797153,
+      "f1": 0.567741935483871
+    },
+    "lr": {
+      "accuracy": 0.9718260869565217,
+      "precision": 0.7078891257995735,
+      "recall": 0.39383155397390274,
+      "f1": 0.5060975609756098
+    }
+  }
+}
