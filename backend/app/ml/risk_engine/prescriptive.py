@@ -34,7 +34,7 @@ class PrescriptiveEngine:
         - State: {project.state}
         - Cost: INR {project.revised_cost_cr} Cr
         - Target: {project.revised_end_date}
-        - Overall Risk Score: {feature.risk_score}/10
+        - Overall Risk Score: {feature.risk_score}/100
         - Risk Level: {risk_level}
         
         DIGITAL FINGERPRINT (0-100%, lower is worse):
@@ -47,45 +47,46 @@ class PrescriptiveEngine:
         - Verdict: {momentum.get('overall_classification', {}).get('description', 'Stable')}
         """
 
-        api_key = os.environ.get("OPENROUTER_API_KEY")
+        api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
             if query:
-                return {"prescription": f"⚠️ OpenRouter API Key missing. \n\n**Mock Answer to '{query}':**\n\nThe budget overrun is primarily driven by recent material inflation and an ongoing land acquisition delay in Sector 4."}
+                return {"prescription": f"⚠️ GEMINI_API_KEY missing. \n\n**Mock Answer to '{query}':**\n\nThe budget overrun is primarily driven by recent material inflation and an ongoing land acquisition delay in Sector 4."}
             return {
-                "prescription": "⚠️ OpenRouter API Key not found in environment. \n\n**Mock Prescription:**\n\n1. **Financial Audit:** Conduct immediate review of expenditure variance.\n2. **Schedule Compression:** Accelerate critical path activities to offset the delay momentum.\n3. **Land Acquisition:** Resolve pending clearances in sector 4 to unblock physical progress."
+                "prescription": "⚠️ GEMINI_API_KEY not found in environment. \n\n**Mock Prescription:**\n\n1. **Financial Audit:** Conduct immediate review of expenditure variance.\n2. **Schedule Compression:** Accelerate critical path activities to offset the delay momentum.\n3. **Land Acquisition:** Resolve pending clearances in sector 4 to unblock physical progress."
             }
 
         try:
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-            
             user_msg = ""
             if query:
                 user_msg = f"{context}\n\nUSER QUERY: {query}\n\nAnswer the user's query specifically using the project context. Be concise and professional."
             else:
                 user_msg = f"{context}\n\nProvide a 3-point action plan to mitigate the risks. Format using markdown. Be extremely concise and professional."
                 
-            payload = {
-                "models": [
-                    "google/gemini-2.5-flash",
-                    "google/gemini-3.0-flash",
-                    "google/gemini-3.5-flash"
-                ],
-                "messages": [
-                    {"role": "system", "content": "You are a highly analytical AI that provides concise, actionable, and structured markdown reports for infrastructure risk. Use bolding and bullet points."},
-                    {"role": "user", "content": user_msg}
-                ]
-            }
-            resp = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=25)
+            system_prompt = "You are a highly analytical AI that provides concise, actionable, and structured markdown reports for infrastructure risk. Use bolding and bullet points.\n\n"
             
-            if resp.status_code == 200:
-                data = resp.json()
-                content = data["choices"][0]["message"]["content"]
-                return {"prescription": content}
-            else:
-                return {"prescription": f"⚠️ LLM Generation Failed: {resp.status_code} - {resp.text}"}
+            payload = {
+                "contents": [{
+                    "parts": [{"text": system_prompt + user_msg}]
+                }]
+            }
+            
+            headers = {"Content-Type": "application/json"}
+            
+            requested_models = ["gemini-2.5-flash", "gemini-3.0-flash", "gemini-3.5-flash"]
+            last_err = ""
+            
+            for model_id in requested_models:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_id}:generateContent?key={api_key}"
+                resp = requests.post(url, headers=headers, json=payload, timeout=25)
+                
+                if resp.status_code == 200:
+                    data = resp.json()
+                    content = data["candidates"][0]["content"]["parts"][0]["text"]
+                    return {"prescription": content}
+                else:
+                    last_err = f"{resp.status_code} - {resp.text}"
+                    
+            return {"prescription": f"⚠️ Gemini API Failed after trying all requested models. Last error: {last_err}"}
                 
         except Exception as e:
-            return {"prescription": f"⚠️ Error connecting to OpenRouter: {str(e)}"}
+            return {"prescription": f"⚠️ Error connecting to Gemini API: {str(e)}"}

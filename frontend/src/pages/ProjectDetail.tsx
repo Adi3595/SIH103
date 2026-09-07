@@ -178,7 +178,7 @@ export default function ProjectDetail() {
                   <p className={`text-6xl font-black tabular-nums leading-none`} style={{ color: theme.accent }}>
                     {fp.risk_score?.toFixed(1)}
                   </p>
-                  <p className="text-xs text-slate-400 font-semibold mt-1">out of 10.0</p>
+                  <p className="text-xs text-slate-400 font-semibold mt-1">out of 100.0</p>
                 </div>
               )}
             </div>
