@@ -4,8 +4,8 @@ import { motion } from 'framer-motion'
 import axios from 'axios'
 import {
   ArrowLeft, Building2, MapPin, Calendar, DollarSign,
-  TrendingUp, AlertTriangle, CheckCircle2, Clock,
-  Layers, Target, BarChart2, Fingerprint, Sparkles, Zap
+  TrendingUp, Clock,
+  Layers, Target, BarChart2, Fingerprint, Zap
 } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
 import ProjectTimeline from '../components/charts/ProjectTimeline'

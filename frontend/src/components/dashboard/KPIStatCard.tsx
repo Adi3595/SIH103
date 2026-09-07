@@ -1,5 +1,4 @@
 import { motion } from "framer-motion"
-import { LucideIcon } from "lucide-react"
 
 export default function KPIStatCard({ title, value, subtitle, icon: Icon, color, delay }: any) {
   return (

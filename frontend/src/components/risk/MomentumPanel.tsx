@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { motion } from 'framer-motion'
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, Zap, Activity } from 'lucide-react'
 
 export default function MomentumPanel({ projectId }: { projectId: string }) {

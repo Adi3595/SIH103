@@ -26,9 +26,8 @@ export default function DigitalFingerprint({ fingerprint }: { fingerprint: any }
       <div className="flex-1 flex flex-col justify-around gap-4">
         {dims.map((dim, i) => {
           let color = '#0f766e' // teal-700
-          let bg = '#ccfbf1' // teal-100
-          if (dim.val < 40) { color = '#be123c'; bg = '#ffe4e6' }
-          else if (dim.val < 70) { color = '#b45309'; bg = '#fef3c7' }
+          if (dim.val < 40) { color = '#be123c' }
+          else if (dim.val < 70) { color = '#b45309' }
           
           return (
             <div key={dim.key}>

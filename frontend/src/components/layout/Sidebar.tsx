@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { NavLink } from "react-router-dom"
-import { LayoutDashboard, FolderKanban, BrainCircuit, TrendingUp, AlertOctagon, BarChart3, Database, Settings, Map, Upload } from "lucide-react"
+import { LayoutDashboard, FolderKanban, TrendingUp, AlertOctagon, BarChart3, Settings, Map, Upload } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../../utils/cn"
 

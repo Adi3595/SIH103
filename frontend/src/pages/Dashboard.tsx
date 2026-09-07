@@ -55,30 +55,31 @@ export default function Dashboard() {
       ) : error ? (
         <ErrorState onRetry={() => window.location.reload()} />
       ) : summary ? (
-        <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
+        <motion.div variants={containerVariants as any} initial="hidden" animate="show" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants as any}>
               <KPIStatCard title="Total Projects" value={summary.total_projects} subtitle="Active monitoring" icon={CheckCircle2} color="#0f766e" />
             </motion.div>
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants as any}>
               <KPIStatCard title="Critical Risk" value={summary.critical_risk} subtitle="Require immediate action" icon={AlertOctagon} color="#be123c" />
             </motion.div>
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants as any}>
               <KPIStatCard title="High Risk" value={summary.high_risk} subtitle="Nearing thresholds" icon={ShieldAlert} color="#c2410c" />
             </motion.div>
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants as any}>
               <KPIStatCard title="Rising Risk" value={summary.rising_risk} subtitle="Accelerating momentum" icon={TrendingUp} color="#b45309" />
             </motion.div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <motion.div variants={itemVariants} className="lg:col-span-2">
+            <motion.div variants={itemVariants as any} className="lg:col-span-2">
               <PriorityTable projects={summary.top_priorities} />
             </motion.div>
-            <motion.div variants={itemVariants} className="space-y-6">
+            <motion.div variants={itemVariants as any} className="space-y-6">
               <IntelligenceAlert project={summary.top_priorities[0]} />
               <div className="glass-panel p-6">
                 <RiskDistribution 
+                  total={summary.total_projects}
                   data={{
                     low: summary.low_risk,
                     medium: summary.medium_risk,

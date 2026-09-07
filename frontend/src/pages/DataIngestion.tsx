@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Upload, FileText, CheckCircle2, Database, AlertCircle, Loader2 } from 'lucide-react'
+import { Upload, FileText, CheckCircle2, Database, AlertCircle } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
 import axios from 'axios'
 

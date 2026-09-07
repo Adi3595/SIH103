@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
-import { Sparkles, Bot, AlertCircle } from 'lucide-react'
+import { Sparkles, Bot } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 export default function AIAdvisor({ projectId }: { projectId: string }) {
