@@ -28,21 +28,12 @@ export default function Sidebar() {
     >
       {/* Logo area */}
       <div className="relative px-3 py-3 flex items-center border-b border-slate-100 overflow-hidden">
-        {/* Icon-only cropped logo (always visible) */}
-        <div
-          className="shrink-0 rounded-xl overflow-hidden shadow-md border border-white/60"
-          style={{ width: 38, height: 38 }}
-        >
+        {/* Icon (always visible) */}
+        <div className="shrink-0 flex items-center justify-center bg-teal text-white shadow-glow-teal rounded-lg w-10 h-10 overflow-hidden bg-slate-900 border border-slate-700">
           <img
-            src="/logo.png"
+            src="/logo_icon.png"
             alt="Nirikshan"
-            style={{
-              width: 76,
-              height: 76,
-              objectFit: 'none',
-              objectPosition: 'center top',
-              marginTop: -4,
-            }}
+            className="w-8 h-8 object-contain"
           />
         </div>
 
@@ -54,14 +45,13 @@ export default function Sidebar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -8 }}
               transition={{ duration: 0.18 }}
-              className="ml-3 flex flex-col overflow-hidden"
+              className="ml-3 flex flex-col justify-center overflow-hidden h-10"
             >
-              <span className="text-sm font-black text-slate-800 tracking-wide whitespace-nowrap">
-                Nirikshan
-              </span>
-              <span className="text-[9px] font-semibold text-teal-600 tracking-widest uppercase whitespace-nowrap">
-                Monitor · Predict · Build
-              </span>
+              <img 
+                src="/logo_text.png" 
+                alt="Nirikshan: Monitor . Predict . Build Better" 
+                className="h-8 object-contain object-left" 
+              />
             </motion.div>
           )}
         </AnimatePresence>
