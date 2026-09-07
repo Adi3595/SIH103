@@ -22,13 +22,13 @@
   }
 
   [data-theme="dark"] {
-    --surface-page: #0f172a;
-    --surface-card: #1e293b;
-    --surface-sunken: #0b1120;
+    --surface-page: #0e1411;
+    --surface-card: #151d1a;
+    --surface-sunken: #0a0f0c;
     --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --text-muted: #64748b;
-    --border-default: #334155;
+    --border-default: #202c27;
     
     --brand-primary: #14b8a6;
     --brand-secondary: #0f766e;
