@@ -29,11 +29,11 @@ export default function Sidebar() {
       {/* Logo area */}
       <div className="relative px-3 py-3 flex items-center border-b border-slate-100 overflow-hidden">
         {/* Icon (always visible) */}
-        <div className="shrink-0 flex items-center justify-center bg-teal text-white shadow-glow-teal rounded-lg w-10 h-10 overflow-hidden bg-slate-900 border border-slate-700">
+        <div className="shrink-0 flex items-center justify-center rounded-xl w-11 h-11 overflow-hidden border border-[#0a7a4c]/30 shadow-[0_0_20px_rgba(10,122,76,0.4)]" style={{ backgroundColor: '#043b25' }}>
           <img
             src="/logo_icon.png"
             alt="Nirikshan"
-            className="w-8 h-8 object-contain"
+            className="w-9 h-9 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
           />
         </div>
 
