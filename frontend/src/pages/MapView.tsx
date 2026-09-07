@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+﻿import { useEffect, useState, useMemo } from 'react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps'
@@ -7,6 +7,7 @@ import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 import { Map, Activity, TrendingUp, FolderKanban, AlertOctagon } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
+import API_BASE from '../config/api'
 
 const INDIA_TOPO = '/india_states.json'
 
@@ -63,7 +64,7 @@ export default function MapView() {
 
   useEffect(() => {
     setLoading(true)
-    axios.get(`http://127.0.0.1:8000/api/projects/geospatial?sector=${sector}`)
+    axios.get(`${API_BASE}/api/projects/geospatial?sector=${sector}`)
       .then(res => { setData(res.data); setLoading(false) })
       .catch(() => setLoading(false))
   }, [sector])

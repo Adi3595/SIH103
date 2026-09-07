@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { Brain, AlertCircle, CheckCircle2 } from 'lucide-react'
+import API_BASE from '../../config/api'
 
 export default function PredictiveML({ projectId }: { projectId: string }) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/projects/" + projectId + "/predictions")
+    axios.get(`${API_BASE}/api/projects/` + projectId + "/predictions")
       .then(res => { setData(res.data); setLoading(false) })
       .catch(() => setLoading(false))
   }, [projectId])

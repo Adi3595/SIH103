@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, Send, X, Bot, User, Loader2, Sparkles } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import API_BASE from '../../config/api'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -39,7 +40,7 @@ export default function ProjectChat({ projectId, projectName }: { projectId: str
     setMessages(prev => [...prev, { role: 'user', content: msg }])
     setLoading(true)
     try {
-      const res = await axios.post(`http://127.0.0.1:8000/api/projects/${projectId}/chat`, { message: msg })
+      const res = await axios.post(`${API_BASE}/api/projects/${projectId}/chat`, { message: msg })
       setMessages(prev => [...prev, { role: 'assistant', content: res.data.reply }])
     } catch {
       setMessages(prev => [...prev, {

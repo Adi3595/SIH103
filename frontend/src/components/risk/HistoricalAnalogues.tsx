@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { Network, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import RiskBadge from './RiskBadge'
+import API_BASE from '../../config/api'
 
 export default function HistoricalAnalogues({ projectId }: { projectId: string }) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/projects/" + projectId + "/analogues")
+    axios.get(`${API_BASE}/api/projects/` + projectId + "/analogues")
       .then(res => { setData(res.data); setLoading(false) })
       .catch(() => setLoading(false))
   }, [projectId])

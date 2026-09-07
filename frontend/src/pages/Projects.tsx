@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -6,6 +6,7 @@ import { Search, ArrowUpRight, Filter, FolderKanban } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
 import SkeletonTable from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
+import API_BASE from '../config/api'
 
 interface Project {
   internal_project_id: string
@@ -34,7 +35,7 @@ export default function Projects() {
   const itemsPerPage = 100
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/projects?limit=10000')
+    axios.get('`${API_BASE}/api/projects?limit=10000')
       .then(res => { setProjects(res.data); setLoading(false) })
       .catch(() => { setLoading(false); setError(true) })
   }, [])

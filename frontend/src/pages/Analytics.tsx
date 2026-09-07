@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { BarChart3 } from 'lucide-react'
@@ -6,6 +6,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import PageContainer from '../components/layout/PageContainer'
 import { SkeletonCard } from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
+import API_BASE from '../config/api'
 
 interface SummaryData {
   total_projects: number
@@ -30,7 +31,7 @@ export default function Analytics() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/dashboard/summary')
+    axios.get('`${API_BASE}/api/dashboard/summary')
       .then(res => { setData(res.data); setLoading(false) })
       .catch(() => { setLoading(false); setError(true) })
   }, [])

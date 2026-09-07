@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -8,6 +8,7 @@ import RiskBadge from '../components/risk/RiskBadge'
 import ProjectStateBadge from '../components/risk/ProjectStateBadge'
 import { SkeletonCard } from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
+import API_BASE from '../config/api'
 
 interface Fingerprint {
   project_id: string
@@ -96,7 +97,7 @@ export default function Priorities() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/dashboard/summary')
+    axios.get('`${API_BASE}/api/dashboard/summary')
       .then(res => {
         setPriorities(res.data.top_priorities || [])
         setLoading(false)

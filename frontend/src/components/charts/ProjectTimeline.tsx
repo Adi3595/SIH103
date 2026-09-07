@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import API_BASE from '../../config/api'
 import {
   Line, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer, ComposedChart, Bar, ReferenceLine
@@ -31,7 +32,7 @@ export default function ProjectTimeline({ projectId }: { projectId?: string }) {
 
   useEffect(() => {
     if (!projectId) return
-    axios.get(`http://127.0.0.1:8000/api/projects/${projectId}/fingerprint/history`)
+    axios.get(`${API_BASE}/api/projects/${projectId}/fingerprint/history`)
       .then(res => {
         const raw = res.data as any[]
         const chartData = raw.map((d, i) => {

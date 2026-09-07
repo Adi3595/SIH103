@@ -1,6 +1,7 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { Settings as SettingsIcon, Server, Shield, Bell, Palette, Info, Key } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
+import API_BASE from '../config/api'
 
 const sections = [
   {
@@ -8,7 +9,7 @@ const sections = [
     title: 'Backend Configuration',
     color: '#0f766e',
     items: [
-      { label: 'API Endpoint', value: 'http://127.0.0.1:8000', type: 'text' },
+      { label: 'API Endpoint', value: '`${API_BASE}', type: 'text' },
       { label: 'Database', value: 'SQLite — sih26103.db', type: 'readonly' },
       { label: 'Risk Engine', value: 'v1.0 — Hybrid Rule+ML', type: 'readonly' },
     ]

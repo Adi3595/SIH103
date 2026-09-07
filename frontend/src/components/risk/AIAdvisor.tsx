@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { Sparkles, Bot } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import API_BASE from '../../config/api'
 
 export default function AIAdvisor({ projectId }: { projectId: string }) {
   const [prescription, setPrescription] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/projects/" + projectId + "/prescription")
+    axios.get(`${API_BASE}/api/projects/` + projectId + "/prescription")
       .then(res => { setPrescription(res.data.prescription); setLoading(false) })
       .catch(() => {
         setPrescription("?? Failed to generate prescription.")

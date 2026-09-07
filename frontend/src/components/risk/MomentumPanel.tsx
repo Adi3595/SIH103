@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, Zap, Activity } from 'lucide-react'
+import API_BASE from '../../config/api'
 
 export default function MomentumPanel({ projectId }: { projectId: string }) {
   const [report, setReport] = useState<any>(null)
   
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/projects/" + projectId + "/momentum")
+    axios.get(`${API_BASE}/api/projects/` + projectId + "/momentum")
       .then(res => setReport(res.data))
       .catch(() => {})
   }, [projectId])

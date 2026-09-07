@@ -1,8 +1,9 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Upload, FileText, CheckCircle2, Database, AlertCircle } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
 import axios from 'axios'
+import API_BASE from '../config/api'
 
 export default function DataIngestion() {
   const [dragActive, setDragActive] = useState(false)
@@ -37,7 +38,7 @@ export default function DataIngestion() {
     files.forEach(f => formData.append('files', f))
     
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/ingestion/upload', formData, {
+      const res = await axios.post('`${API_BASE}/api/ingestion/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

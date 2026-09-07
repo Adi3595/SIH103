@@ -9,6 +9,7 @@ import PriorityTable from "../components/dashboard/PriorityTable"
 import IntelligenceAlert from "../components/dashboard/IntelligenceAlert"
 import { SkeletonCard } from "../components/ui/SkeletonLoader"
 import ErrorState from "../components/ui/ErrorState"
+import API_BASE from '../config/api'
 
 export default function Dashboard() {
   const [summary, setSummary] = useState<any>(null)
@@ -16,7 +17,7 @@ export default function Dashboard() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/dashboard/summary").then((res) => {
+    axios.get(`${API_BASE}/api/dashboard/summary`).then((res) => {
       setSummary(res.data)
       setLoading(false)
     }).catch(() => {

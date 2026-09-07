@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import axios from 'axios'
@@ -18,6 +18,7 @@ import PredictiveML from '../components/risk/PredictiveML'
 import ProjectChat from '../components/risk/ProjectChat'
 import { SkeletonCard } from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
+import API_BASE from '../config/api'
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 function fmt(n: number | undefined | null, unit = 'Cr') {
@@ -96,8 +97,8 @@ export default function ProjectDetail() {
   useEffect(() => {
     setLoading(true); setError(false)
     Promise.all([
-      axios.get(`http://127.0.0.1:8000/api/projects/${id}`),
-      axios.get(`http://127.0.0.1:8000/api/projects/${id}/fingerprint`),
+      axios.get(`${API_BASE}/api/projects/${id}`),
+      axios.get(`${API_BASE}/api/projects/${id}/fingerprint`),
     ]).then(([p, f]) => {
       setProject(p.data)
       setFp(f.data)
