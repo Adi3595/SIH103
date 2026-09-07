@@ -63,8 +63,12 @@ async def force_cors_and_security_headers(request: Request, call_next):
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["Cache-Control"] = "no-store"
-    response.headers.pop("Server", None)
     
+    if "server" in response.headers:
+        del response.headers["server"]
+    if "Server" in response.headers:
+        del response.headers["Server"]
+        
     return response
 
 
