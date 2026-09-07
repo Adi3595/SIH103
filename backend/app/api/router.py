@@ -272,6 +272,9 @@ async def upload_data_ingestion(files: list[UploadFile] = File(...)):
     engine = create_engine(DATABASE_URL)
     results = []
 
+    # Parse and categorize files before inserting to enforce dependency order
+    parsed_files = []
+    
     for file in files:
         if not file.filename.endswith('.csv'):
             results.append(f"{file.filename}: Skipped (Only CSV allowed)")
@@ -294,6 +297,28 @@ async def upload_data_ingestion(files: list[UploadFile] = File(...)):
                 results.append(f"{file.filename}: Failed (Unknown schema)")
                 continue
                 
+            parsed_files.append({"filename": file.filename, "table_name": table_name, "df": df})
+            
+        except Exception as e:
+            results.append(f"{file.filename}: Failed parsing ({str(e)})")
+
+    # Define strict insertion order to satisfy foreign keys
+    order_map = {
+        "projects": 1,
+        "project_snapshots": 2,
+        "milestones": 3,
+        "issues": 4
+    }
+    
+    # Sort files by dependency order
+    parsed_files.sort(key=lambda x: order_map.get(x["table_name"], 99))
+
+    for item in parsed_files:
+        filename = item["filename"]
+        table_name = item["table_name"]
+        df = item["df"]
+        
+        try:
             # Prevent UNIQUE constraint failure for projects
             if table_name == "projects" and "internal_project_id" in df.columns:
                 with engine.connect() as conn:
@@ -302,7 +327,7 @@ async def upload_data_ingestion(files: list[UploadFile] = File(...)):
                 df = df[~df["internal_project_id"].isin(existing_set)]
                 
                 if df.empty:
-                    results.append(f"{file.filename}: Skipped (All projects already exist)")
+                    results.append(f"{filename}: Skipped (All projects already exist)")
                     continue
 
             from sqlalchemy import inspect
@@ -323,10 +348,10 @@ async def upload_data_ingestion(files: list[UploadFile] = File(...)):
             df = df[cols_to_keep]
 
             df.to_sql(table_name, engine, if_exists="append", index=False)
-            results.append(f"{file.filename}: Ingested {len(df)} records into {table_name}")
+            results.append(f"{filename}: Ingested {len(df)} records into {table_name}")
             
         except Exception as e:
-            results.append(f"{file.filename}: Failed ({str(e)})")
+            results.append(f"{filename}: Failed ({str(e)})")
 
     # Run ML feature pipeline asynchronously in threadpool since it uses pandas/sqlalchemy sync
     await run_in_threadpool(run_pipeline)
