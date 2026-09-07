@@ -21,31 +21,12 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
 
 
 # ─────────────────────────────────────────────
-# Security Headers Middleware
-# ─────────────────────────────────────────────
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        response = await call_next(request)
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        response.headers["Cache-Control"] = "no-store"
-        # Remove server fingerprint
-        response.headers.pop("Server", None)
-        return response
-
-
-# ─────────────────────────────────────────────
 # App
 # ─────────────────────────────────────────────
 app = FastAPI(
     title="AI-Powered Predictive & Prescriptive Infrastructure Monitoring System",
     description="Backend API for SIH26103 Dashboard",
     version="1.0.0",
-    # Disable auto-generated docs in production for security
     docs_url="/docs",
     redoc_url=None,
 )
@@ -54,17 +35,37 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Security headers
-app.add_middleware(SecurityHeadersMiddleware)
-
-# CORS — only allow our known origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# ─────────────────────────────────────────────
+# Force CORS & Security Headers Middleware (Ultimate Override)
+# ─────────────────────────────────────────────
+@app.middleware("http")
+async def force_cors_and_security_headers(request: Request, call_next):
+    # Handle preflight OPTIONS request immediately
+    if request.method == "OPTIONS":
+        response = JSONResponse(content="OK")
+    else:
+        try:
+            response = await call_next(request)
+        except Exception as e:
+            # If the app crashes, still return a response so CORS headers can be attached!
+            response = JSONResponse(status_code=500, content={"detail": f"Internal Server Error: {str(e)}"})
+    
+    # Blindly force CORS headers on every single response (success, fail, or preflight)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    
+    # Security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Cache-Control"] = "no-store"
+    response.headers.pop("Server", None)
+    
+    return response
 
 
 # ─────────────────────────────────────────────
