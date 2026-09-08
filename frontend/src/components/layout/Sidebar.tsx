@@ -24,10 +24,10 @@ export default function Sidebar() {
       animate={{ width: isExpanded ? 220 : 64 }}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
-      className="h-full shrink-0 flex flex-col relative z-20 glass-card mx-3 my-3 border border-border-default"
+      className="h-full shrink-0 flex flex-col relative z-20 mx-3 my-3 border border-border-default rounded-xl overflow-hidden shadow-2xl bg-gradient-to-b from-[#2a9d8f] via-[#264653] to-[#1a3340] dark:bg-none dark:bg-surface-card"
     >
       {/* Logo area */}
-      <div className="relative px-3 flex items-center overflow-hidden transition-all duration-300 bg-[#043b25] dark:bg-transparent" 
+      <div className="relative px-3 flex items-center overflow-hidden transition-all duration-300 bg-black/20 dark:bg-transparent" 
            style={{ borderBottom: '1px solid var(--border-default)', minHeight: '64px' }}>
         
         {/* Icon (always visible) */}
@@ -64,17 +64,23 @@ export default function Sidebar() {
           <NavLink key={item.label} to={item.to} end={item.end}
             className={({ isActive }) => cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
-              isActive ? "bg-surface-sunken shadow-sm border border-border-default" : "hover:bg-surface-sunken/50 border border-transparent"
+              isActive ? "bg-white/20 dark:bg-surface-sunken shadow-sm border border-white/10 dark:border-border-default" : "hover:bg-white/10 dark:hover:bg-surface-sunken/50 border border-transparent"
             )}>
             {({ isActive }) => (
               <>
-                <div className="shrink-0 transition-all duration-200" style={{ color: isActive ? item.accent : 'var(--text-muted)' }}>
+                <div className={cn(
+                  "shrink-0 transition-all duration-200",
+                  isActive ? "text-white dark:text-[var(--text-primary)]" : "text-white/60 dark:text-[var(--text-muted)]"
+                )}>
                   <item.icon size={18} />
                 </div>
                 <AnimatePresence>
                   {isExpanded && (
                     <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-xs font-semibold whitespace-nowrap" style={{ color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+                      className={cn(
+                        "text-xs font-semibold whitespace-nowrap",
+                        isActive ? "text-white dark:text-[var(--text-primary)]" : "text-white/80 dark:text-[var(--text-secondary)]"
+                      )}>
                       {item.label}
                     </motion.span>
                   )}
