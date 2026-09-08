@@ -24,18 +24,18 @@ export default function Sidebar() {
       animate={{ width: isExpanded ? 220 : 64 }}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
-      className="h-full shrink-0 flex flex-col relative z-20 glass-card mx-3 my-3 border border-white/60"
+      className="h-full shrink-0 flex flex-col relative z-20 glass-card mx-3 my-3 border border-border-default"
     >
       {/* Logo area */}
-      <div className="relative px-3 flex items-center overflow-hidden transition-all duration-300" 
-           style={{ backgroundColor: '#043b25', borderBottom: '1px solid rgba(255,255,255,0.1)', minHeight: '64px' }}>
+      <div className="relative px-3 flex items-center overflow-hidden transition-all duration-300 dark:bg-transparent" 
+           style={{ backgroundColor: 'var(--brand-secondary)', borderBottom: '1px solid var(--border-default)', minHeight: '64px' }}>
         
         {/* Icon (always visible) */}
         <div className="shrink-0 flex items-center justify-center w-10 h-10 overflow-hidden">
           <img
             src="/logo_icon.png"
             alt="Nirikshan Icon"
-            className="w-10 h-10 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+            className="w-10 h-10 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] dark:brightness-125"
           />
         </div>
 
@@ -52,7 +52,7 @@ export default function Sidebar() {
               <img 
                 src="/logo_text.png" 
                 alt="Nirikshan: Monitor . Predict . Build Better" 
-                className="h-9 object-contain object-left drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" 
+                className="h-9 object-contain object-left drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] dark:brightness-125" 
               />
             </motion.div>
           )}
@@ -64,17 +64,17 @@ export default function Sidebar() {
           <NavLink key={item.label} to={item.to} end={item.end}
             className={({ isActive }) => cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
-              isActive ? "bg-white shadow-sm border border-slate-100" : "hover:bg-slate-50 border border-transparent"
+              isActive ? "bg-surface-sunken shadow-sm border border-border-default" : "hover:bg-surface-sunken/50 border border-transparent"
             )}>
             {({ isActive }) => (
               <>
-                <div className="shrink-0 transition-all duration-200" style={{ color: isActive ? item.accent : "#94a3b8" }}>
+                <div className="shrink-0 transition-all duration-200" style={{ color: isActive ? item.accent : 'var(--text-muted)' }}>
                   <item.icon size={18} />
                 </div>
                 <AnimatePresence>
                   {isExpanded && (
                     <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-xs font-semibold whitespace-nowrap" style={{ color: isActive ? "#334155" : "#64748b" }}>
+                      className="text-xs font-semibold whitespace-nowrap" style={{ color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
                       {item.label}
                     </motion.span>
                   )}
