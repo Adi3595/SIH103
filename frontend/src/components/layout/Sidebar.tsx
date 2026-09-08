@@ -27,8 +27,8 @@ export default function Sidebar() {
       className="h-full shrink-0 flex flex-col relative z-20 glass-card mx-3 my-3 border border-border-default"
     >
       {/* Logo area */}
-      <div className="relative px-3 flex items-center overflow-hidden transition-all duration-300 dark:bg-transparent" 
-           style={{ backgroundColor: 'var(--brand-secondary)', borderBottom: '1px solid var(--border-default)', minHeight: '64px' }}>
+      <div className="relative px-3 flex items-center overflow-hidden transition-all duration-300 bg-[#043b25] dark:bg-transparent" 
+           style={{ borderBottom: '1px solid var(--border-default)', minHeight: '64px' }}>
         
         {/* Icon (always visible) */}
         <div className="shrink-0 flex items-center justify-center w-10 h-10 overflow-hidden">
