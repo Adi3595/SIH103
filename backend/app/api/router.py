@@ -339,6 +339,9 @@ def process_and_insert_data(parsed_files, engine_url):
                     if str(col['type']).upper() == 'DATE' and col['name'] in df.columns:
                         df[col['name']] = pd.to_datetime(df[col['name']], errors='coerce').dt.date
 
+                # Replace ALL pandas missing values (NaN, NaT, None) with Python None for psycopg3 pipeline compatibility
+                df = df.where(pd.notnull(df), None)
+
                 df.to_sql(table_name, engine, if_exists="append", index=False)
                 total_inserted += len(df)
                 
