@@ -19,6 +19,7 @@ import ProjectChat from '../components/risk/ProjectChat'
 import { SkeletonCard } from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
 import API_BASE from '../config/api'
+import { useSEO } from '../hooks/useSEO'
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 function fmt(n: number | undefined | null, unit = 'Cr') {
@@ -88,6 +89,11 @@ function DimBar({ label, val, delay = 0 }: { label: string; val: number; delay?:
 
 // ── Main component ───────────────────────────────────────────────────────────
 export default function ProjectDetail() {
+  useSEO({
+    title: 'Project Details',
+    description: 'Deep-dive intelligence report for a specific project.'
+  })
+
   const { id } = useParams()
   const [project, setProject] = useState<any>(null)
   const [fp, setFp]           = useState<any>(null)   // fingerprint

@@ -9,6 +9,7 @@ import ProjectStateBadge from '../components/risk/ProjectStateBadge'
 import { SkeletonCard } from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
 import API_BASE from '../config/api'
+import { useSEO } from '../hooks/useSEO'
 
 interface Fingerprint {
   project_id: string
@@ -92,6 +93,11 @@ function ProjectCard({ p, i, accent }: { p: Fingerprint, i: number, accent: stri
 }
 
 export default function Priorities() {
+  useSEO({
+    title: 'Priority Matrix',
+    description: 'Cross-dimension prioritization of projects.'
+  })
+
   const [priorities, setPriorities] = useState<Fingerprint[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Database, CheckCircle2, AlertTriangle, Clock } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
+import { useSEO } from '../hooks/useSEO'
 
 const checks = [
   { label: 'Project Master Records', status: 'PASS', count: 750, icon: CheckCircle2, color: '#2a9d8f' },
@@ -13,6 +14,11 @@ const checks = [
 ]
 
 export default function DataQuality() {
+  useSEO({
+    title: 'Data Quality Logs',
+    description: 'Monitor system data integrity and ingestion errors.'
+  })
+
   return (
     <PageContainer>
       <div className="mb-8">

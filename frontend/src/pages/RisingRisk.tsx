@@ -8,6 +8,7 @@ import RiskBadge from '../components/risk/RiskBadge'
 import SkeletonTable from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
 import API_BASE from '../config/api'
+import { useSEO } from '../hooks/useSEO'
 
 interface Fingerprint {
   project_id: string
@@ -39,6 +40,11 @@ function getWeakestDimension(p: Fingerprint) {
 }
 
 export default function RisingRisk() {
+  useSEO({
+    title: 'Rising Risk Tracker',
+    description: 'Monitor projects with rapidly deteriorating health.'
+  })
+
   const [rising, setRising] = useState<Fingerprint[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)

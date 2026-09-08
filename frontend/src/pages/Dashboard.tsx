@@ -10,8 +10,14 @@ import IntelligenceAlert from "../components/dashboard/IntelligenceAlert"
 import { SkeletonCard } from "../components/ui/SkeletonLoader"
 import ErrorState from "../components/ui/ErrorState"
 import API_BASE from '../config/api'
+import { useSEO } from "../hooks/useSEO"
 
 export default function Dashboard() {
+  useSEO({
+    title: 'Dashboard Overview',
+    description: 'Real-time oversight of national infrastructure projects.'
+  })
+
   const [summary, setSummary] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)

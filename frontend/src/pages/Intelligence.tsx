@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { BrainCircuit, FlaskConical, Cpu, Layers, CheckCircle2 } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
+import { useSEO } from '../hooks/useSEO'
 
 const features = [
   {
@@ -42,6 +43,11 @@ const features = [
 ]
 
 export default function Intelligence() {
+  useSEO({
+    title: 'Intelligence Hub',
+    description: 'AI-driven insights and advisory for critical infrastructure.'
+  })
+
   return (
     <PageContainer>
       <div className="mb-8">

@@ -7,6 +7,7 @@ import PageContainer from '../components/layout/PageContainer'
 import { SkeletonCard } from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
 import API_BASE from '../config/api'
+import { useSEO } from '../hooks/useSEO'
 
 interface SummaryData {
   total_projects: number
@@ -26,6 +27,11 @@ const RISK_DIST = [
 ]
 
 export default function Analytics() {
+  useSEO({
+    title: 'Portfolio Analytics',
+    description: 'Detailed analytics and insights across all infrastructure projects.'
+  })
+
   const [data, setData] = useState<SummaryData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)

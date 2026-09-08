@@ -2,6 +2,7 @@
 import { Settings as SettingsIcon, Server, Shield, Bell, Palette, Info, Key } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
 import API_BASE from '../config/api'
+import { useSEO } from '../hooks/useSEO'
 
 const sections = [
   {
@@ -46,6 +47,11 @@ const sections = [
 ]
 
 export default function Settings() {
+  useSEO({
+    title: 'System Settings',
+    description: 'Configure PAIMANA intelligence engine settings.'
+  })
+
   return (
     <PageContainer>
       <div className="mb-8">

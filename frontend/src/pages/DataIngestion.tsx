@@ -4,8 +4,14 @@ import { Upload, FileText, CheckCircle2, Database, AlertCircle } from 'lucide-re
 import PageContainer from '../components/layout/PageContainer'
 import axios from 'axios'
 import API_BASE from '../config/api'
+import { useSEO } from '../hooks/useSEO'
 
 export default function DataIngestion() {
+  useSEO({
+    title: 'Data Ingestion',
+    description: 'Upload and process raw project datasets securely.'
+  })
+
   const [dragActive, setDragActive] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle')

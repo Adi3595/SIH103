@@ -7,6 +7,7 @@ import PageContainer from '../components/layout/PageContainer'
 import SkeletonTable from '../components/ui/SkeletonLoader'
 import ErrorState from '../components/ui/ErrorState'
 import API_BASE from '../config/api'
+import { useSEO } from '../hooks/useSEO'
 
 interface Project {
   internal_project_id: string
@@ -26,6 +27,11 @@ const SECTOR_COLORS: Record<string, string> = {
 }
 
 export default function Projects() {
+  useSEO({
+    title: 'Project Directory',
+    description: 'Browse all tracked infrastructure projects.'
+  })
+
   const [projects, setProjects] = useState<Project[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)

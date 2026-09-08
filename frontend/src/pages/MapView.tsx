@@ -8,6 +8,7 @@ import 'react-tooltip/dist/react-tooltip.css'
 import { Map, Activity, TrendingUp, FolderKanban, AlertOctagon } from 'lucide-react'
 import PageContainer from '../components/layout/PageContainer'
 import API_BASE from '../config/api'
+import { useSEO } from '../hooks/useSEO'
 
 const INDIA_TOPO = '/india_states.json'
 
@@ -55,6 +56,11 @@ const GEO_TO_DB: Record<string, string> = {
 const SECTORS = ['ALL', 'Roads and Highways', 'Railways', 'Power', 'Petroleum', 'Coal', 'Urban Infrastructure']
 
 export default function MapView() {
+  useSEO({
+    title: 'Geospatial View',
+    description: 'Geographic distribution of infrastructure risk.'
+  })
+
   const [data, setData] = useState<StateStats[]>([])
   const [loading, setLoading] = useState(true)
   const [sector, setSector] = useState('ALL')
